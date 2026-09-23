@@ -21,43 +21,54 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN status](https://www.r-pkg.org/badges/version/perufauna)](https://CRAN.R-project.org/package=perufauna)
+[![R-CMD-check](https://github.com/PaulESantos/perufauna/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/PaulESantos/perufauna/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/PaulESantos/perufauna/graph/badge.svg)](https://app.codecov.io/gh/PaulESantos/perufauna)
 <!-- badges: end -->
 
-The goal of perufauna is to ...
+**perufauna** es un metapaquete que orquesta y armoniza el ecosistema de paquetes de biodiversidad y fauna del Perú:
 
-## Installation
+* **avesperu**: Lista patrón oficial de aves del Perú (Checklist UNOP).
+* **perumammals**: Backbone taxonómico y validación de mamíferos del Perú (Pacheco et al. 2021).
+* **citesperu**: Estatus y verificación en los Apéndices CITES del Perú (MINAM).
+* **perufaunads004**: Fauna amenazada nacional (D.S. N° 004-2014-MINAGRI y Libro Rojo de SERFOR).
 
-You can install the development version of perufauna like so:
+## Instalación
 
-``` r
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+Puedes instalar la versión de desarrollo de **perufauna** desde GitHub:
+
+```r
+# pak::pak("PaulESantos/perufauna")
 ```
 
-## Example
+## Uso Rápido
 
-This is a basic example which shows you how to solve a common problem:
+Carga todos los paquetes miembros y accede a funciones integradas con:
 
-```{r}
-#| label: example
+```r
 library(perufauna)
-## basic example code
 ```
 
-What is special about using `README.qmd` instead of just `README.md`? You can include R chunks like so:
+### Consulta Cruzada Integrada (`pf_match`)
 
-```{r}
-#| label: cars
-summary(cars)
+Valida una lista de especies simultáneamente a través de checklists taxonómicos y marcos regulatorios:
+
+```r
+especies <- c(
+  "Panthera onca",        # Mamífero (Pacheco, CITES I, D.S. 004: NT)
+  "Vultur gryphus",       # Ave (UNOP, CITES I, D.S. 004: EN)
+  "Tremarctos ornatus",   # Mamífero (Pacheco, CITES I, D.S. 004: VU)
+  "Lagothrix flavicauda", # Primate endémico (Pacheco, CITES I, D.S. 004: CR)
+  "Homo sapiens"          # Especie no listada en checklists peruanos
+)
+
+diagnostico <- pf_match(especies)
+diagnostico
 ```
 
-You'll still need to render `README.qmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this.
+### Resumen Rápido (`pf_status`)
 
-You can also embed plots, for example:
+Obtén un resumen condensado para informes o inventarios:
 
-```{r}
-#| label: pressure
-#| echo: false
-plot(pressure)
+```r
+pf_status(especies)
 ```
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.

@@ -1,15 +1,30 @@
 Package: perufauna
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: Easily Load and Harmonize Peruvian Fauna and Biodiversity Packages
+Version: 0.1.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+    person("Paul E.", "Santos Andrade", , 
+    "paulefrens@gmail.com", role = c("aut", "cre", "cph"),
+           comment = c(ORCID = "0000-0002-6635-0375"))
+Description: A metapackage providing an integrated toolkit to load, 
+    cross-reference, and validate biodiversity data for Peruvian fauna across
+    specialized taxonomic backbones (avesperu, perumammals) and regulatory 
+    threat frameworks (citesperu, perufaunads004).
 License: MIT + file LICENSE
+Depends:
+    R (>= 4.1)
+Imports:
+    avesperu,
+    citesperu,
+    cli,
+    perufaunads004,
+    perumammals,
+    rlang,
+    tibble
 Suggests: 
     testthat (>= 3.0.0)
 Config/roxygen2/version: 8.1.0
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-URL: https://github.com/PaulESantos/perufauna
+URL: https://github.com/PaulESantos/perufauna, https://paulesantos.github.io/perufauna/
 BugReports: https://github.com/PaulESantos/perufauna/issues

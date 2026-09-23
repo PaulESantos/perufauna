@@ -1,0 +1,69 @@
+
+
+<!-- README.md is generated from README.qmd. Please edit that file -->
+
+# perufauna
+
+<!-- badges: start -->
+
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/perufauna)](https://CRAN.R-project.org/package=perufauna)
+[![R-CMD-check](https://github.com/PaulESantos/perufauna/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/PaulESantos/perufauna/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/PaulESantos/perufauna/graph/badge.svg)](https://app.codecov.io/gh/PaulESantos/perufauna)
+<!-- badges: end -->
+
+**perufauna** es un metapaquete que orquesta y armoniza el ecosistema de
+paquetes de biodiversidad y fauna del Perú:
+
+- **avesperu**: Lista patrón oficial de aves del Perú (Checklist UNOP).
+- **perumammals**: Backbone taxonómico y validación de mamíferos del
+  Perú (Pacheco et al. 2021).
+- **citesperu**: Estatus y verificación en los Apéndices CITES del Perú
+  (MINAM).
+- **perufaunads004**: Fauna amenazada nacional (D.S. N° 004-2014-MINAGRI
+  y Libro Rojo de SERFOR).
+
+## Instalación
+
+Puedes instalar la versión de desarrollo de **perufauna** desde GitHub:
+
+``` r
+# pak::pak("PaulESantos/perufauna")
+```
+
+## Uso Rápido
+
+Carga todos los paquetes miembros y accede a funciones integradas con:
+
+``` r
+library(perufauna)
+```
+
+### Consulta Cruzada Integrada (`pf_match`)
+
+Valida una lista de especies simultáneamente a través de checklists
+taxonómicos y marcos regulatorios:
+
+``` r
+especies <- c(
+  "Panthera onca",        # Mamífero (Pacheco, CITES I, D.S. 004: NT)
+  "Vultur gryphus",       # Ave (UNOP, CITES I, D.S. 004: EN)
+  "Tremarctos ornatus",   # Mamífero (Pacheco, CITES I, D.S. 004: VU)
+  "Lagothrix flavicauda", # Primate endémico (Pacheco, CITES I, D.S. 004: CR)
+  "Homo sapiens"          # Especie no listada en checklists peruanos
+)
+
+diagnostico <- pf_match(especies)
+diagnostico
+```
+
+### Resumen Rápido (`pf_status`)
+
+Obtén un resumen condensado para informes o inventarios:
+
+``` r
+pf_status(especies)
+```

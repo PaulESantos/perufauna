@@ -3,3 +3,12 @@
 ^LICENSE\.md$
 ^README\.qmd$
 ^cran-comments\.md$
+^\.github$
+^codecov\.yml$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^libraries$
+^tidyverse_ref$
+^ECOSYSTEM_STANDARDS\.md$
+^DESIGN_DECISIONS\.md$
