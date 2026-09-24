@@ -7,10 +7,14 @@
 <!-- badges: start -->
 
 [![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+stable](https://img.shields.io/badge/lifecycle-stable-green.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/perufauna)](https://CRAN.R-project.org/package=perufauna)
 [![R-CMD-check](https://github.com/PaulESantos/perufauna/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/PaulESantos/perufauna/actions/workflows/R-CMD-check.yaml)
+[![CRAN
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/perufauna?color=green)](https://cran.r-project.org/package=perufauna)
+[![CRAN weekly
+downloads](https://cranlogs.r-pkg.org/badges/last-week/perufauna?color=green)](https://cran.r-project.org/package=perufauna)
 [![Codecov test
 coverage](https://codecov.io/gh/PaulESantos/perufauna/graph/badge.svg)](https://app.codecov.io/gh/PaulESantos/perufauna)
 <!-- badges: end -->

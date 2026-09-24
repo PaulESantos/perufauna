@@ -1,4 +1,60 @@
 url: https://paulesantos.github.io/perufauna/
+
+home:
+  title: "perufauna: Easily Load and Harmonize Peruvian Fauna and Biodiversity Packages"
+  description: "A metapackage providing an integrated toolkit to load, cross-reference, and validate biodiversity data for Peruvian fauna across specialized taxonomic backbones (avesperu, perumammals) and regulatory threat frameworks (citesperu, perufaunads004)."
+
+authors:
+  Paul E. Santos Andrade:
+    href: https://paulefrensa.rbind.io/
+
 template:
   bootstrap: 5
+  bslib:
+    font_scale: 1.0
+    base_font:
+      google: "Jost"
+    code_font:
+      google: "Overpass Mono"
+    heading_font:
+      google: "Abhaya Libre"
+    bg: "#fcfbf9"         # lighten springwood background
+    fg: "#231F20"         # contrast ratio: 15.76 for text
+    primary: "#272b30"    # dark blue active text
+    secondary: "#BED4E2"  # blue active pill background
+    link-color: "#437597" # brighter link color, contrast 4.52
+    info: "#BED4E2"       # version badge bg
+    headings-color: "#336688"
+    # navbar
+    navbar-bg: "#fcfbf9"  # match to site bg
+    navbar-light-color: "#272b30"
+    navbar-light-hover-color: "#336688"
 
+navbar:
+  type: light
+  bg: "#fcfbf9"
+  structure:
+    left: [home, reference, news]
+    right: [search, github]
+  components:
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/PaulESantos/perufauna
+      aria-label: GitHub
+
+reference:
+  - title: "Unified Queries & Reconciliation"
+    desc: "Core functions to cross-reference and summarize Peruvian biodiversity across taxonomic backbones and regulatory lists."
+    contents:
+      - pf_match
+      - pf_status
+
+  - title: "Metapackage Orchestration & Diagnostics"
+    desc: "Tools to inspect package versions, manage attached packages, and diagnose environment state."
+    contents:
+      - perufauna_packages
+      - perufauna_deps
+      - perufauna_sitrep
+      - perufauna_conflicts
+      - perufauna_attach
+      - perufauna_logo
