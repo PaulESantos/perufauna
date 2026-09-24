@@ -16,7 +16,7 @@ test_that("pf_match cross-references mammals, birds, and non-Peru taxa correctly
   row_jaguar <- res[res$submitted_name == "Panthera onca", ]
   expect_true(row_jaguar$in_peru)
   expect_true(row_jaguar$in_pacheco)
-  expect_false(row_jaguar$in_unop)
+  expect_true(is.na(row_jaguar$in_unop))
   expect_equal(row_jaguar$taxonomic_group, "Mammalia")
   expect_equal(row_jaguar$cites_appendix, "I")
   expect_equal(row_jaguar$ds004_category, "NT")
@@ -24,7 +24,7 @@ test_that("pf_match cross-references mammals, birds, and non-Peru taxa correctly
   # Vultur gryphus: bird in UNOP, CITES I
   row_condor <- res[res$submitted_name == "Vultur gryphus", ]
   expect_true(row_condor$in_peru)
-  expect_true(row_condor$in_unop)
+  expect_equal(row_condor$in_unop, "Residente")
   expect_false(row_condor$in_pacheco)
   expect_equal(row_condor$taxonomic_group, "Aves")
   expect_equal(row_condor$cites_appendix, "I")
@@ -32,6 +32,7 @@ test_that("pf_match cross-references mammals, birds, and non-Peru taxa correctly
   # Homo sapiens: not in checklists
   row_human <- res[res$submitted_name == "Homo sapiens", ]
   expect_false(row_human$in_peru)
+  expect_true(is.na(row_human$in_unop))
 })
 
 test_that("pf_match accepts data.frame input", {
@@ -41,3 +42,10 @@ test_that("pf_match accepts data.frame input", {
   expect_equal(nrow(res), 2)
   expect_true(all(res$in_peru))
 })
+
+test_that("pf_match reports correct status for endemic and vagrant birds", {
+  res <- pf_match(c("Loddigesia mirabilis", "Aptenodytes patagonicus"))
+  expect_equal(res$in_unop, c("Endémico", "Divagante"))
+  expect_equal(res$is_endemic, c(TRUE, FALSE))
+})
+

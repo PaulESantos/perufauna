@@ -7,16 +7,26 @@
 pf_status(splist, ...)
 }
 \arguments{
-\item{splist}{Character vector of species names.}
+\item{splist}{Character vector of species names, or a \code{data.frame}
+containing species names.}
 
 \item{...}{Arguments forwarded to \code{\link{pf_match}}.}
 }
 \value{
-A character vector of species status summaries.
+A \code{tibble::tibble} with 6 atomized columns:
+\itemize{
+\item \code{submitted_name}: The raw input name.
+\item \code{accepted_name}: Validated/accepted scientific binomial name.
+\item \code{taxonomic_group}: Taxonomic class/group ("Aves", "Mammalia", etc., or NA).
+\item \code{occurrence_status}: Occurrence or residency status in Peru ("Residente", "Endémico", "Divagante", "Migratorio", etc., or NA).
+\item \code{cites_appendix}: CITES appendix ("I", "II", "III", or NA).
+\item \code{ds004_category}: National threat category under D.S. 004-2014-MINAGRI ("CR", "EN", "VU", "NT", or NA).
+}
 }
 \description{
-Provides an immediate formatted textual summary of Peru occurrence,
-taxonomic group, CITES appendix, and national threat status for each species.
+Provides an immediate formatted and atomized summary table of taxonomic group,
+occurrence/residency status in Peru, CITES appendix, and national threat category
+(D.S. 004-2014-MINAGRI) for each species.
 }
 \examples{
 \donttest{

@@ -21,7 +21,7 @@ A \code{tibble::tibble} with harmonized cross-database columns:
 \item \code{accepted_name}: Validated/accepted scientific binomial name.
 \item \code{taxonomic_group}: Taxonomic class/group ("Aves", "Mammalia", "Reptilia", "Amphibia", etc.).
 \item \code{in_peru}: Logical. Confirmed presence in Peru via UNOP, Pacheco, or D.S. 004.
-\item \code{in_unop}: Logical. Listed in UNOP Birds of Peru.
+\item \code{in_unop}: Character. UNOP bird status ("Residente", "Endémico", "Divagante", "Migratorio", "Introducido", "No confirmado", or NA).
 \item \code{in_pacheco}: Logical. Listed in Pacheco et al. (2021) Peru Mammals.
 \item \code{cites_appendix}: CITES status ("I", "II", "III", or NA).
 \item \code{ds004_category}: National threat category ("CR", "EN", "VU", "NT", or NA).

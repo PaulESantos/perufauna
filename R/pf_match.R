@@ -21,7 +21,7 @@
 #'   \item \code{accepted_name}: Validated/accepted scientific binomial name.
 #'   \item \code{taxonomic_group}: Taxonomic class/group ("Aves", "Mammalia", "Reptilia", "Amphibia", etc.).
 #'   \item \code{in_peru}: Logical. Confirmed presence in Peru via UNOP, Pacheco, or D.S. 004.
-#'   \item \code{in_unop}: Logical. Listed in UNOP Birds of Peru.
+#'   \item \code{in_unop}: Character. UNOP bird status ("Residente", "Endémico", "Divagante", "Migratorio", "Introducido", "No confirmado", or NA).
 #'   \item \code{in_pacheco}: Logical. Listed in Pacheco et al. (2021) Peru Mammals.
 #'   \item \code{cites_appendix}: CITES status ("I", "II", "III", or NA).
 #'   \item \code{ds004_category}: National threat category ("CR", "EN", "VU", "NT", or NA).
@@ -54,7 +54,7 @@ pf_match <- function(splist, max_distance = 0.1, ...) {
       accepted_name   = character(),
       taxonomic_group = character(),
       in_peru         = logical(),
-      in_unop         = logical(),
+      in_unop         = character(),
       in_pacheco      = logical(),
       cites_appendix  = character(),
       ds004_category  = character(),
@@ -92,6 +92,7 @@ pf_match <- function(splist, max_distance = 0.1, ...) {
     # Defaults
     accepted_nm <- raw_name
     grp <- NA_character_
+    unop_status <- NA_character_
     is_unop <- FALSE
     is_pacheco <- FALSE
     endemic <- FALSE
@@ -104,6 +105,7 @@ pf_match <- function(splist, max_distance = 0.1, ...) {
       a_row <- res_aves[i, ]
       if (!is.na(a_row$accepted_name) && nzchar(trimws(a_row$accepted_name))) {
         is_unop <- TRUE
+        unop_status <- if (!is.na(a_row$status) && nzchar(trimws(a_row$status))) a_row$status else "Registrado"
         grp <- "Aves"
         accepted_nm <- a_row$accepted_name
         if (!is.na(a_row$status) && grepl("end[e\u00e9]mic", tolower(a_row$status))) {
@@ -161,7 +163,7 @@ pf_match <- function(splist, max_distance = 0.1, ...) {
       accepted_name   = accepted_nm,
       taxonomic_group = grp %||% "Unassigned",
       in_peru         = in_peru,
-      in_unop         = is_unop,
+      in_unop         = unop_status,
       in_pacheco      = is_pacheco,
       cites_appendix  = cites_app,
       ds004_category  = ds004_cat,
