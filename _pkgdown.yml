@@ -1,7 +1,7 @@
 url: https://paulesantos.github.io/perufauna/
 
 development:
-  mode: auto
+  mode: unreleased
 
 home:
   title: "perufauna: Easily Load and Harmonize Peruvian Fauna and Biodiversity Packages"
