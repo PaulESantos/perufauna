@@ -43,16 +43,24 @@ navbar:
   type: light
   bg: "#fcfbf9"
   structure:
-    left: [home, reference, news]
+    left: [home, intro, reference, articles, news]
     right: [search, github]
   components:
     home:
       icon: fa-home fa-lg
       aria-label: "Home"
       href: index.html
+    intro:
+      text: "Get started"
+      href: articles/uso-pf-match-pf-status.html
     reference:
       text: "Reference"
       href: reference/index.html
+    articles:
+      text: "Articles"
+      menu:
+        - text: "Uso Integrado de pf_match() y pf_status()"
+          href: articles/uso-pf-match-pf-status.html
     news:
       text: "News"
       href: news/index.html
