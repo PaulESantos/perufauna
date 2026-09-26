@@ -1,15 +1,20 @@
 url: https://paulesantos.github.io/perufauna/
 
+development:
+  mode: auto
+
 home:
   title: "perufauna: Easily Load and Harmonize Peruvian Fauna and Biodiversity Packages"
   description: "A metapackage providing an integrated toolkit to load, cross-reference, and validate biodiversity data for Peruvian fauna across specialized taxonomic backbones (avesperu, perumammals) and regulatory threat frameworks (citesperu, perufaunads004)."
 
 authors:
   Paul E. Santos Andrade:
-    href: https://paulefrensa.rbind.io/
+    href: https://orcid.org/0000-0002-6635-0375
+    html: '<a href="https://orcid.org/0000-0002-6635-0375"><img src="https://orcid.org/sites/default/files/images/orcid_16x16.png" alt="ORCID iD" style="vertical-align:middle;margin-right:4px;">Paul E. Santos Andrade</a>'
 
 template:
   bootstrap: 5
+  assets: pkgdown
   bslib:
     font_scale: 1.0
     base_font:
@@ -25,10 +30,14 @@ template:
     link-color: "#437597" # brighter link color, contrast 4.52
     info: "#BED4E2"       # version badge bg
     headings-color: "#336688"
-    # navbar
     navbar-bg: "#fcfbf9"  # match to site bg
     navbar-light-color: "#272b30"
     navbar-light-hover-color: "#336688"
+
+opengraph:
+  twitter:
+    creator: "@PaulEfrenSantos"
+    card: summary
 
 navbar:
   type: light
@@ -37,6 +46,16 @@ navbar:
     left: [home, reference, news]
     right: [search, github]
   components:
+    home:
+      icon: fa-home fa-lg
+      aria-label: "Home"
+      href: index.html
+    reference:
+      text: "Reference"
+      href: reference/index.html
+    news:
+      text: "News"
+      href: news/index.html
     github:
       icon: fab fa-github fa-lg
       href: https://github.com/PaulESantos/perufauna
