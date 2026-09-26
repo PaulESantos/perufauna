@@ -1,0 +1,130 @@
+/* heavily adapted from Desirée De Leon's tidymodels pkgdown CSS */
+/* https://github.com/tidyverse/tidytemplate/blob/master/inst/pkgdown/assets/tidymodels.css */
+
+:root {
+  --bunker: #272b30;
+  --ziggurat: #BED4E2;
+  --wedgewood: #437496;
+  --forest: #235338;
+}
+
+/* spacing ----------------------------------------------- */
+
+.contents h2, .contents h3, .contents h4 {
+	margin-bottom: 1.5rem;
+	margin-top: 2rem;
+}
+
+.row {
+  margin-top: 1.5em;
+}
+
+@media (min-width: 768px) {
+  .contents {
+    padding-right: 4em;
+  }
+}
+
+/* navbar ----------------------------------------------- */
+
+.navbar {
+  padding-bottom: 1em;
+  padding-top: 1em;
+}
+
+/* active behavior for navbar */
+.navbar-light .navbar-nav .nav-link:focus,
+.navbar-light .navbar-nav .active > .nav-link {
+	background: var(--ziggurat);
+	color: var(--bunker);
+	border-radius: 0.25rem;
+}
+
+/* hover behavior for navbar */
+.navbar-light .navbar-nav .nav-item > .nav-link:hover {
+	background: none;
+}
+
+code a {
+  color: var(--wedgewood);
+}
+
+code a:hover {
+  color: var(--bunker);
+}
+
+/* Dev status & sidebar readability --------------------- */
+
+.dev-status,
+aside .dev-status,
+.sidebar .dev-status {
+  margin-top: 1.75rem;
+  padding-top: 0.5rem;
+}
+
+.dev-status h2,
+aside .dev-status h2,
+.sidebar .dev-status h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--bunker);
+  margin-bottom: 0.85rem;
+  border-bottom: 2px solid var(--ziggurat);
+  padding-bottom: 0.35rem;
+}
+
+.dev-status ul,
+aside .dev-status ul,
+.sidebar .dev-status ul {
+  list-style: none !important;
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.dev-status li,
+aside .dev-status li,
+.sidebar .dev-status li {
+  margin-bottom: 0.25rem;
+  line-height: 1.4;
+}
+
+.dev-status img,
+aside .dev-status img,
+.sidebar .dev-status img {
+  max-width: 100%;
+  height: auto;
+  display: inline-block;
+  vertical-align: middle;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.05));
+}
+
+/* Sidebar sections readability */
+aside h2,
+.sidebar h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--bunker);
+  margin-top: 1.5rem;
+  margin-bottom: 0.65rem;
+}
+
+aside ul,
+.sidebar ul {
+  padding-left: 1.1rem;
+}
+
+/* Tables and badges polish */
+.table {
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.table th {
+  background-color: rgba(190, 212, 226, 0.25);
+  color: var(--bunker);
+  font-weight: 600;
+}

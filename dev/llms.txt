@@ -1,0 +1,90 @@
+# perufauna
+
+**perufauna** es un metapaquete que orquesta y armoniza el ecosistema de
+paquetes de biodiversidad y fauna del Perú:
+
+- **avesperu**: Lista patrón oficial de aves del Perú (Checklist UNOP).
+- **perumammals**: Backbone taxonómico y validación de mamíferos del
+  Perú (Pacheco et al. 2021).
+- **citesperu**: Estatus y verificación en los Apéndices CITES del Perú
+  (MINAM).
+- **perufaunads004**: Fauna amenazada nacional (D.S. N° 004-2014-MINAGRI
+  y Libro Rojo de SERFOR).
+
+## Instalación
+
+Puedes instalar la versión de desarrollo de **perufauna** desde GitHub:
+
+``` r
+
+# pak::pak("PaulESantos/perufauna")
+```
+
+## Uso Rápido
+
+Carga todos los paquetes miembros y accede a funciones integradas con:
+
+``` r
+
+library(perufauna)
+```
+
+### Consulta Cruzada Integrada (`pf_match`)
+
+Valida una lista de especies simultáneamente a través de checklists
+taxonómicos y marcos regulatorios:
+
+``` r
+
+especies <- c(
+  "Panthera onca",        # Mamífero (Pacheco, CITES I, D.S. 004: NT)
+  "Vultur gryphus",       # Ave (UNOP, CITES I, D.S. 004: EN)
+  "Tremarctos ornatus",   # Mamífero (Pacheco, CITES I, D.S. 004: VU)
+  "Lagothrix flavicauda", # Primate endémico (Pacheco, CITES I, D.S. 004: CR)
+  "Homo sapiens"          # Especie no listada en checklists peruanos
+)
+
+diagnostico <- pf_match(especies)
+diagnostico
+```
+
+### Resumen Rápido (`pf_status`)
+
+Obtén un resumen condensado para informes o inventarios:
+
+``` r
+
+pf_status(especies)
+```
+
+# Package index
+
+## Unified Queries & Reconciliation
+
+Core functions to cross-reference and summarize Peruvian biodiversity
+across taxonomic backbones and regulatory lists.
+
+- [`pf_match()`](https://paulesantos.github.io/perufauna/dev/reference/pf_match.md)
+  : Cross-Referenced Taxonomic and Conservation Matching for Peruvian
+  Fauna
+- [`pf_status()`](https://paulesantos.github.io/perufauna/dev/reference/pf_status.md)
+  : Quick Status Summary for Peruvian Fauna
+
+## Metapackage Orchestration & Diagnostics
+
+Tools to inspect package versions, manage attached packages, and
+diagnose environment state.
+
+- [`perufauna_packages()`](https://paulesantos.github.io/perufauna/dev/reference/perufauna_packages.md)
+  : List all core packages in perufauna
+- [`perufauna_deps()`](https://paulesantos.github.io/perufauna/dev/reference/perufauna_deps.md)
+  : List all perufauna dependencies and versions
+- [`perufauna_sitrep()`](https://paulesantos.github.io/perufauna/dev/reference/perufauna_sitrep.md)
+  : Situation Report on perufauna and Core Biodiversity Packages
+- [`perufauna_conflicts()`](https://paulesantos.github.io/perufauna/dev/reference/perufauna_conflicts.md)
+  : Conflicts between perufauna and other packages
+- [`perufauna_attach()`](https://paulesantos.github.io/perufauna/dev/reference/perufauna_attach.md)
+  : Attach Core Packages in perufauna
+- [`perufauna_logo()`](https://paulesantos.github.io/perufauna/dev/reference/perufauna_logo.md)
+  : The perufauna Logo in ASCII
+
