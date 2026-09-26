@@ -88,3 +88,9 @@ diagnose environment state.
 - [`perufauna_logo()`](https://paulesantos.github.io/perufauna/reference/perufauna_logo.md)
   : The perufauna Logo in ASCII
 
+# Articles
+
+### All vignettes
+
+- [Uso Integrado de pf_match() y
+  pf_status()](https://paulesantos.github.io/perufauna/articles/uso-pf-match-pf-status.md):
