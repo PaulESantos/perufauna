@@ -1,58 +1,347 @@
 # perufauna
 
-**perufauna** es un metapaquete que orquesta y armoniza el ecosistema de
-paquetes de biodiversidad y fauna del Perú:
+**perufauna** es un metapaquete de R (inspirado en la arquitectura y
+principios de diseño de *tidyverse*) que orquesta, armoniza y valida de
+forma unificada la información sobre biodiversidad y fauna silvestre del
+Perú.
 
-- **avesperu**: Lista patrón oficial de aves del Perú (Checklist UNOP).
-- **perumammals**: Backbone taxonómico y validación de mamíferos del
-  Perú (Pacheco et al. 2021).
-- **citesperu**: Estatus y verificación en los Apéndices CITES del Perú
-  (MINAM).
-- **perufaunads004**: Fauna amenazada nacional (D.S. N° 004-2014-MINAGRI
-  y Libro Rojo de SERFOR).
+Integra en un solo punto de acceso los catálogos taxonómicos oficiales y
+los marcos regulatorios nacionales e internacionales, resolviendo la
+dispersión de fuentes para consultores ambientales (Líneas Base, EIA,
+DIA, PMA), investigadores, peritos forenses de fauna y gestores de
+conservación.
+
+------------------------------------------------------------------------
+
+## Ecosistema de Paquetes
+
+Al cargar **perufauna**, se adjuntan y coordinan automáticamente cuatro
+paquetes especializados del ecosistema:
+
+| Paquete | Prefijo | Ámbito Biológico / Temático | Fuente Oficial de Referencia | Registros / Alcance |
+|:---|:--:|:---|:---|:---|
+| **[avesperu](https://github.com/PaulESantos/avesperu)** | `ap_` | Aves del Perú | Lista Patrón de la Unión de Ornitólogos del Perú (UNOP / SACC) | ~1,925 especies |
+| **[perumammals](https://github.com/PaulESantos/perumammals)** | `pm_` | Mamíferos del Perú | Checklist Taxonómico de Pacheco et al. (2021) | 573 especies |
+| **[citesperu](https://github.com/PaulESantos/citesperu)** | `cites_` | Comercio Internacional CITES | Listado Oficial CITES Perú (MINAM, Apéndices I, II y III) | Fauna y flora CITES |
+| **[perufaunads004](https://github.com/PaulESantos/perufaunads004)** | `ds004_` | Fauna Amenazada Nacional | D.S. N° 004-2014-MINAGRI y Libro Rojo de SERFOR | CR, EN, VU y NT |
+
+> **Convención de nombres y retrocompatibilidad:** Cada paquete miembro
+> implementa su propio prefijo canónico (`ap_`, `pm_`, `cites_`,
+> `ds004_`) para prevenir colisiones en el espacio de nombres,
+> manteniendo al mismo tiempo retrocompatibilidad total con sus nombres
+> de funciones originales.
+
+------------------------------------------------------------------------
 
 ## Instalación
 
-Puedes instalar la versión de desarrollo de **perufauna** desde GitHub:
+Puedes instalar la versión de desarrollo de **perufauna** (y sus
+dependencias) directamente desde GitHub:
 
 ``` r
 
-# pak::pak("PaulESantos/perufauna")
+# Instalar usando pak (recomendado)
+# install.packages("pak")
+pak::pak("PaulESantos/perufauna")
+
+# O alternativamente con remotes
+# install.packages("remotes")
+remotes::install_github("PaulESantos/perufauna")
 ```
 
-## Uso Rápido
+------------------------------------------------------------------------
 
-Carga todos los paquetes miembros y accede a funciones integradas con:
+## Inicio Rápido
+
+### Carga del Metapaquete
+
+Carga todo el ecosistema con una única instrucción:
 
 ``` r
 
 library(perufauna)
+#> ── Attaching core perufauna packages ─────────────────── perufauna 0.1.0.9000 ──
+#> ✔ avesperu       0.1.1.9000     ✔ perufaunads004 0.1.0     
+#> ✔ citesperu      0.1.0          ✔ perumammals    0.1.0.9000
+#> ℹ Use pf_match() for cross-referenced multi-taxa matching.
 ```
 
-### Consulta Cruzada Integrada (`pf_match`)
+Al cargarse, `perufauna` reporta las versiones de los paquetes miembros
+adjuntos y provee orientación inmediata sobre las funciones de consulta
+integradas.
 
-Valida una lista de especies simultáneamente a través de checklists
-taxonómicos y marcos regulatorios:
+------------------------------------------------------------------------
+
+## Flujos de Trabajo Principales
+
+### 1. Reconciliación Taxonómica y Regulatoria Cruzada (`pf_match`)
+
+La función
+[`pf_match()`](https://paulesantos.github.io/perufauna/reference/pf_match.md)
+cruza una lista de nombres científicos simultáneamente contra los cuatro
+repertorios de datos, resolviendo nombres aceptados, estatus biológico y
+categorías de protección legal en una sola llamada:
 
 ``` r
 
 especies <- c(
-  "Panthera onca",        # Mamífero (Pacheco, CITES I, D.S. 004: NT)
-  "Vultur gryphus",       # Ave (UNOP, CITES I, D.S. 004: EN)
-  "Tremarctos ornatus",   # Mamífero (Pacheco, CITES I, D.S. 004: VU)
-  "Lagothrix flavicauda", # Primate endémico (Pacheco, CITES I, D.S. 004: CR)
-  "Homo sapiens"          # Especie no listada en checklists peruanos
+  "Panthera onca",        # Mamífero: CITES I, D.S. 004: NT
+  "Vultur gryphus",       # Ave: CITES I, D.S. 004: EN
+  "Tremarctos ornatus",   # Mamífero: CITES I, D.S. 004: VU
+  "Lagothrix flavicauda", # Primate endémico: CITES I, D.S. 004: CR
+  "Homo sapiens"          # Especie no registrada en listas de fauna peruana
 )
 
 diagnostico <- pf_match(especies)
 diagnostico
+#> # A tibble: 5 × 10
+#>   submitted_name       accepted_name  taxonomic_group in_peru in_unop in_pacheco
+#>   <chr>                <chr>          <chr>           <lgl>   <chr>   <lgl>     
+#> 1 Panthera onca        Panthera onca  Mammalia        TRUE    <NA>    TRUE      
+#> 2 Vultur gryphus       Vultur gryphus Aves            TRUE    Reside… FALSE     
+#> 3 Tremarctos ornatus   Tremarctos or… Mammalia        TRUE    <NA>    TRUE      
+#> 4 Lagothrix flavicauda Lagothrix fla… Mammalia        TRUE    <NA>    TRUE      
+#> 5 Homo sapiens         Homo sapiens   <NA>            FALSE   <NA>    FALSE     
+#> # ℹ 4 more variables: cites_appendix <chr>, ds004_category <chr>,
+#> #   is_threatened <lgl>, is_endemic <lgl>
 ```
 
-### Resumen Rápido (`pf_status`)
+#### Variables Generadas por `pf_match()`:
 
-Obtén un resumen condensado para informes o inventarios:
+[`pf_match()`](https://paulesantos.github.io/perufauna/reference/pf_match.md)
+devuelve un `tibble` de 10 variables estructuradas:
+
+1.  `submitted_name`: Nombre original ingresado por el usuario.
+2.  `accepted_name`: Nombre binomial aceptado según el estándar
+    taxonómico correspondiente.
+3.  `taxonomic_group`: Clase o grupo mayor asignado (`"Aves"`,
+    `"Mammalia"`, etc.).
+4.  `in_peru`: Booleano (`TRUE`/`FALSE`) que confirma si la especie
+    ocurre en territorio peruano.
+5.  `in_unop`: Estatus en el checklist UNOP (`"Residente"`,
+    `"Endémico"`, `"Migratorio"`, etc.).
+6.  `in_pacheco`: `TRUE` si la especie está listada en el checklist de
+    mamíferos de Pacheco et al. (2021).
+7.  `cites_appendix`: Apéndice regulatorio CITES (`"I"`, `"II"`, `"III"`
+    o `NA`).
+8.  `ds004_category`: Categoría nacional de amenaza según D.S.
+    004-2014-MINAGRI (`"CR"`, `"EN"`, `"VU"`, `"NT"` o `NA`).
+9.  `is_threatened`: `TRUE` si la especie está legalmente categorizada
+    como amenazada a nivel nacional.
+10. `is_endemic`: `TRUE` si la especie es endémica de Perú.
+
+------------------------------------------------------------------------
+
+### 2. Resumen Ejecutivo para Informes y Evaluaciones (`pf_status`)
+
+Para elaborar cuadros técnicos, matrices de impacto ambiental o anexos
+de Línea Base biológica,
+[`pf_status()`](https://paulesantos.github.io/perufauna/reference/pf_status.md)
+genera una tabla condensada de 6 columnas:
 
 ``` r
 
 pf_status(especies)
+#> # A tibble: 5 × 6
+#>   submitted_name  accepted_name taxonomic_group occurrence_status cites_appendix
+#>   <chr>           <chr>         <chr>           <chr>             <chr>         
+#> 1 Panthera onca   Panthera onca Mammalia        Residente         I             
+#> 2 Vultur gryphus  Vultur gryph… Aves            Residente         I             
+#> 3 Tremarctos orn… Tremarctos o… Mammalia        Residente         I             
+#> 4 Lagothrix flav… Lagothrix fl… Mammalia        Endémico          I             
+#> 5 Homo sapiens    Homo sapiens  <NA>            <NA>              <NA>          
+#> # ℹ 1 more variable: ds004_category <chr>
 ```
+
+Las columnas generadas (`submitted_name`, `accepted_name`,
+`taxonomic_group`, `occurrence_status`, `cites_appendix`,
+`ds004_category`) brindan el formato directo solicitado habitualmente en
+expedientes oficiales.
+
+------------------------------------------------------------------------
+
+### 3. Tolerancia a Errores Tipográficos (*Fuzzy Matching*)
+
+Los inventarios de campo con frecuencia presentan variaciones
+ortográficas o errores de digitación. El argumento `max_distance`
+permite realizar concordancias aproximadas:
+
+``` r
+
+especies_con_error <- c(
+  "Pantera onca",        # Falta la 'h'
+  "Tremarctos ornatus",  # Nombre correcto
+  "Vultur griphus"       # 'i' en lugar de 'y'
+)
+
+pf_match(especies_con_error, max_distance = 0.15)
+#> # A tibble: 3 × 10
+#>   submitted_name     accepted_name    taxonomic_group in_peru in_unop in_pacheco
+#>   <chr>              <chr>            <chr>           <lgl>   <chr>   <lgl>     
+#> 1 Pantera onca       Panthera onca    Mammalia        TRUE    <NA>    TRUE      
+#> 2 Tremarctos ornatus Tremarctos orna… Mammalia        TRUE    <NA>    TRUE      
+#> 3 Vultur griphus     Vultur gryphus   Aves            TRUE    Reside… FALSE     
+#> # ℹ 4 more variables: cites_appendix <chr>, ds004_category <chr>,
+#> #   is_threatened <lgl>, is_endemic <lgl>
+```
+
+------------------------------------------------------------------------
+
+### 4. Entrada Directa desde un `data.frame` o `tibble`
+
+[`pf_match()`](https://paulesantos.github.io/perufauna/reference/pf_match.md)
+y
+[`pf_status()`](https://paulesantos.github.io/perufauna/reference/pf_status.md)
+aceptan directamente tablas de datos, detectando automáticamente la
+columna que contiene los nombres científicos (buscando encabezados
+usuales como `scientific_name`, `species`, `nombre_cientifico`, `name` o
+`taxon`):
+
+``` r
+
+inventario <- data.frame(
+  id = 1:4,
+  nombre_cientifico = c(
+    "Panthera onca",
+    "Vultur gryphus",
+    "Tremarctos ornatus",
+    "Lagothrix flavicauda"
+  ),
+  localidad = c("Tambopata", "Colca", "Chachapoyas", "Abiseo"),
+  stringsAsFactors = FALSE
+)
+
+# Consulta directa pasando el dataframe
+resultado <- pf_match(inventario)
+resultado[, c("submitted_name", "taxonomic_group", "cites_appendix", "ds004_category")]
+#> # A tibble: 4 × 4
+#>   submitted_name       taxonomic_group cites_appendix ds004_category
+#>   <chr>                <chr>           <chr>          <chr>         
+#> 1 Panthera onca        Mammalia        I              NT            
+#> 2 Vultur gryphus       Aves            I              EN            
+#> 3 Tremarctos ornatus   Mammalia        I              VU            
+#> 4 Lagothrix flavicauda Mammalia        I              CR
+```
+
+------------------------------------------------------------------------
+
+### 5. Filtrado Rápido de Prioridades de Conservación
+
+Al retornar tibbles estándar, los resultados se integran de forma
+natural con flujos de trabajo de análisis y filtrado:
+
+``` r
+
+# Especies amenazadas a nivel nacional (D.S. 004-2014-MINAGRI / Libro Rojo)
+diagnostico[diagnostico$is_threatened, c("accepted_name", "taxonomic_group", "ds004_category")]
+#> # A tibble: 4 × 3
+#>   accepted_name        taxonomic_group ds004_category
+#>   <chr>                <chr>           <chr>         
+#> 1 Panthera onca        Mammalia        NT            
+#> 2 Vultur gryphus       Aves            EN            
+#> 3 Tremarctos ornatus   Mammalia        VU            
+#> 4 Lagothrix flavicauda Mammalia        CR
+
+# Especies en el Apéndice I de CITES (máxima restricción internacional)
+diagnostico[!is.na(diagnostico$cites_appendix) & diagnostico$cites_appendix == "I", 
+            c("accepted_name", "cites_appendix")]
+#> # A tibble: 4 × 2
+#>   accepted_name        cites_appendix
+#>   <chr>                <chr>         
+#> 1 Panthera onca        I             
+#> 2 Vultur gryphus       I             
+#> 3 Tremarctos ornatus   I             
+#> 4 Lagothrix flavicauda I
+
+# Especies endémicas del Perú
+diagnostico[diagnostico$is_endemic, c("accepted_name", "taxonomic_group")]
+#> # A tibble: 1 × 2
+#>   accepted_name        taxonomic_group
+#>   <chr>                <chr>          
+#> 1 Lagothrix flavicauda Mammalia
+```
+
+------------------------------------------------------------------------
+
+### 6. Diagnóstico y Monitoreo del Entorno
+
+`perufauna` incluye herramientas para diagnosticar el estado del
+ecosistema y monitorear versiones y posibles conflictos:
+
+``` r
+
+# Reporte de situación de dependencias y versiones
+perufauna_sitrep()
+#> ── R Environment ───────────────────────────────────────────────────────────────
+#> • R: 4.6.1
+#> • perufauna: 0.1.0.9000
+#> ── Core Biodiversity Packages ──────────────────────────────────────────────────
+#> • avesperu         (v0.1.1.9000)
+#> • perumammals      (v0.1.0.9000)
+#> • citesperu        (v0.1.0)
+#> • perufaunads004   (v0.1.0)
+
+# Listado estructurado de versiones locales instaladas
+perufauna_deps()
+#> # A tibble: 4 × 3
+#>   package        installed local_version
+#>   <chr>          <lgl>     <chr>        
+#> 1 avesperu       TRUE      0.1.1.9000   
+#> 2 perumammals    TRUE      0.1.0.9000   
+#> 3 citesperu      TRUE      0.1.0        
+#> 4 perufaunads004 TRUE      0.1.0
+
+# Verificación de conflictos entre espacios de nombres cargados
+perufauna_conflicts()
+```
+
+------------------------------------------------------------------------
+
+## Citación
+
+Si utilizas **perufauna** o cualquiera de sus paquetes miembros en
+publicaciones científicas, consultorías o reportes técnicos, por favor
+cita el metapaquete y las fuentes taxonómicas y normativas
+correspondientes:
+
+``` text
+Santos Andrade, P. E. (2026). perufauna: Easily Load and Harmonize Peruvian Fauna
+and Biodiversity Packages. R package version 0.1.0.9000.
+https://paulesantos.github.io/perufauna/
+```
+
+### Fuentes Primarias Integradas:
+
+- **Aves del Perú:** Plenge, M. A., & Angulo, F. (2026). *Lista de las
+  aves del Perú / List of the birds of Peru*. Unión de Ornitólogos del
+  Perú (UNOP).
+- **Mamíferos del Perú:** Pacheco, V., Graham-Angles, R., Aguilar, L.,
+  et al. (2021). *Diversidad y endemismo de los mamíferos del Perú*.
+  Revista Peruana de Biología, 28(especial).
+- **Estatus CITES:** Ministerio del Ambiente (MINAM). *Listado Oficial
+  de Especies de Fauna y Flora Silvestre en los Apéndices CITES para el
+  Perú*.
+- **Fauna Amenazada:** Servicio Nacional Forestal y de Fauna Silvestre
+  (SERFOR) / MINAGRI. *Decreto Supremo N° 004-2014-MINAGRI y Libro Rojo
+  de la Fauna Silvestre Amenazada del Perú*.
+
+------------------------------------------------------------------------
+
+## Documentación y Enlaces
+
+- **Sitio Web de Documentación:**
+  <https://paulesantos.github.io/perufauna/>
+- **Vignette Detallada:** [Uso Integrado de pf_match() y
+  pf_status()](https://paulesantos.github.io/perufauna/articles/uso-pf-match-pf-status.html)
+- **Código Fuente y Reporte de Problemas:** [GitHub
+  Repository](https://github.com/PaulESantos/perufauna)
+- **Estándares del Ecosistema:**
+  [ECOSYSTEM_STANDARDS.md](https://paulesantos.github.io/perufauna/ECOSYSTEM_STANDARDS.md)
+
+------------------------------------------------------------------------
+
+## Licencia
+
+Este proyecto se distribuye bajo la licencia **MIT**. Consulta el
+archivo [LICENSE](https://paulesantos.github.io/perufauna/LICENSE) para
+más detalles.

@@ -63,53 +63,333 @@
 </h1></div>
 <!-- badges: start -->
 
-<p><strong>perufauna</strong> es un metapaquete que orquesta y armoniza el ecosistema de paquetes de biodiversidad y fauna del Perú:</p>
-<ul>
-<li>
-<strong>avesperu</strong>: Lista patrón oficial de aves del Perú (Checklist UNOP).</li>
-<li>
-<strong>perumammals</strong>: Backbone taxonómico y validación de mamíferos del Perú (Pacheco et al. 2021).</li>
-<li>
-<strong>citesperu</strong>: Estatus y verificación en los Apéndices CITES del Perú (MINAM).</li>
-<li>
-<strong>perufaunads004</strong>: Fauna amenazada nacional (D.S. N° 004-2014-MINAGRI y Libro Rojo de SERFOR).</li>
-</ul>
+<p><strong>perufauna</strong> es un metapaquete de R (inspirado en la arquitectura y principios de diseño de <em>tidyverse</em>) que orquesta, armoniza y valida de forma unificada la información sobre biodiversidad y fauna silvestre del Perú.</p>
+<p>Integra en un solo punto de acceso los catálogos taxonómicos oficiales y los marcos regulatorios nacionales e internacionales, resolviendo la dispersión de fuentes para consultores ambientales (Líneas Base, EIA, DIA, PMA), investigadores, peritos forenses de fauna y gestores de conservación.</p>
+<hr>
+<div class="section level2">
+<h2 id="ecosistema-de-paquetes">Ecosistema de Paquetes<a class="anchor" aria-label="anchor" href="#ecosistema-de-paquetes"></a>
+</h2>
+<p>Al cargar <strong>perufauna</strong>, se adjuntan y coordinan automáticamente cuatro paquetes especializados del ecosistema:</p>
+<table class="table">
+<colgroup>
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+</colgroup>
+<thead><tr>
+<th align="left">Paquete</th>
+<th align="center">Prefijo</th>
+<th align="left">Ámbito Biológico / Temático</th>
+<th align="left">Fuente Oficial de Referencia</th>
+<th align="left">Registros / Alcance</th>
+</tr></thead>
+<tbody>
+<tr>
+<td align="left"><strong><a href="https://github.com/PaulESantos/avesperu" class="external-link">avesperu</a></strong></td>
+<td align="center"><code>ap_</code></td>
+<td align="left">Aves del Perú</td>
+<td align="left">Lista Patrón de la Unión de Ornitólogos del Perú (UNOP / SACC)</td>
+<td align="left">~1,925 especies</td>
+</tr>
+<tr>
+<td align="left"><strong><a href="https://github.com/PaulESantos/perumammals" class="external-link">perumammals</a></strong></td>
+<td align="center"><code>pm_</code></td>
+<td align="left">Mamíferos del Perú</td>
+<td align="left">Checklist Taxonómico de Pacheco et al. (2021)</td>
+<td align="left">573 especies</td>
+</tr>
+<tr>
+<td align="left"><strong><a href="https://github.com/PaulESantos/citesperu" class="external-link">citesperu</a></strong></td>
+<td align="center"><code>cites_</code></td>
+<td align="left">Comercio Internacional CITES</td>
+<td align="left">Listado Oficial CITES Perú (MINAM, Apéndices I, II y III)</td>
+<td align="left">Fauna y flora CITES</td>
+</tr>
+<tr>
+<td align="left"><strong><a href="https://github.com/PaulESantos/perufaunads004" class="external-link">perufaunads004</a></strong></td>
+<td align="center"><code>ds004_</code></td>
+<td align="left">Fauna Amenazada Nacional</td>
+<td align="left">D.S. N° 004-2014-MINAGRI y Libro Rojo de SERFOR</td>
+<td align="left">CR, EN, VU y NT</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Convención de nombres y retrocompatibilidad:</strong> Cada paquete miembro implementa su propio prefijo canónico (<code>ap_</code>, <code>pm_</code>, <code>cites_</code>, <code>ds004_</code>) para prevenir colisiones en el espacio de nombres, manteniendo al mismo tiempo retrocompatibilidad total con sus nombres de funciones originales.</p>
+</blockquote>
+<hr>
+</div>
 <div class="section level2">
 <h2 id="instalación">Instalación<a class="anchor" aria-label="anchor" href="#instalaci%C3%B3n"></a>
 </h2>
-<p>Puedes instalar la versión de desarrollo de <strong>perufauna</strong> desde GitHub:</p>
+<p>Puedes instalar la versión de desarrollo de <strong>perufauna</strong> (y sus dependencias) directamente desde GitHub:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># pak::pak("PaulESantos/perufauna")</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Instalar usando pak (recomendado)</span></span>
+<span><span class="co"># install.packages("pak")</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"PaulESantos/perufauna"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># O alternativamente con remotes</span></span>
+<span><span class="co"># install.packages("remotes")</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"PaulESantos/perufauna"</span><span class="op">)</span></span></code></pre></div>
+<hr>
 </div>
 <div class="section level2">
-<h2 id="uso-rápido">Uso Rápido<a class="anchor" aria-label="anchor" href="#uso-r%C3%A1pido"></a>
+<h2 id="inicio-rápido">Inicio Rápido<a class="anchor" aria-label="anchor" href="#inicio-r%C3%A1pido"></a>
 </h2>
-<p>Carga todos los paquetes miembros y accede a funciones integradas con:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/PaulESantos/perufauna" class="external-link">perufauna</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
-<h3 id="consulta-cruzada-integrada-pf_match">Consulta Cruzada Integrada (<code>pf_match</code>)<a class="anchor" aria-label="anchor" href="#consulta-cruzada-integrada-pf_match"></a>
+<h3 id="carga-del-metapaquete">Carga del Metapaquete<a class="anchor" aria-label="anchor" href="#carga-del-metapaquete"></a>
 </h3>
-<p>Valida una lista de especies simultáneamente a través de checklists taxonómicos y marcos regulatorios:</p>
+<p>Carga todo el ecosistema con una única instrucción:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/PaulESantos/perufauna" class="external-link">perufauna</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; ── Attaching core perufauna packages ─────────────────── perufauna 0.1.0.9000 ──</span></span>
+<span><span class="co">#&gt; ✔ avesperu       0.1.1.9000     ✔ perufaunads004 0.1.0     </span></span>
+<span><span class="co">#&gt; ✔ citesperu      0.1.0          ✔ perumammals    0.1.0.9000</span></span>
+<span><span class="co">#&gt; ℹ Use pf_match() for cross-referenced multi-taxa matching.</span></span></code></pre></div>
+<p>Al cargarse, <code>perufauna</code> reporta las versiones de los paquetes miembros adjuntos y provee orientación inmediata sobre las funciones de consulta integradas.</p>
+<hr>
+</div>
+</div>
+<div class="section level2">
+<h2 id="flujos-de-trabajo-principales">Flujos de Trabajo Principales<a class="anchor" aria-label="anchor" href="#flujos-de-trabajo-principales"></a>
+</h2>
+<div class="section level3">
+<h3 id="id_1-reconciliación-taxonómica-y-regulatoria-cruzada-pf_match">1. Reconciliación Taxonómica y Regulatoria Cruzada (<code>pf_match</code>)<a class="anchor" aria-label="anchor" href="#id_1-reconciliaci%C3%B3n-taxon%C3%B3mica-y-regulatoria-cruzada-pf_match"></a>
+</h3>
+<p>La función <code><a href="reference/pf_match.html">pf_match()</a></code> cruza una lista de nombres científicos simultáneamente contra los cuatro repertorios de datos, resolviendo nombres aceptados, estatus biológico y categorías de protección legal en una sola llamada:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">especies</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>  <span class="st">"Panthera onca"</span>,        <span class="co"># Mamífero (Pacheco, CITES I, D.S. 004: NT)</span></span>
-<span>  <span class="st">"Vultur gryphus"</span>,       <span class="co"># Ave (UNOP, CITES I, D.S. 004: EN)</span></span>
-<span>  <span class="st">"Tremarctos ornatus"</span>,   <span class="co"># Mamífero (Pacheco, CITES I, D.S. 004: VU)</span></span>
-<span>  <span class="st">"Lagothrix flavicauda"</span>, <span class="co"># Primate endémico (Pacheco, CITES I, D.S. 004: CR)</span></span>
-<span>  <span class="st">"Homo sapiens"</span>          <span class="co"># Especie no listada en checklists peruanos</span></span>
+<span>  <span class="st">"Panthera onca"</span>,        <span class="co"># Mamífero: CITES I, D.S. 004: NT</span></span>
+<span>  <span class="st">"Vultur gryphus"</span>,       <span class="co"># Ave: CITES I, D.S. 004: EN</span></span>
+<span>  <span class="st">"Tremarctos ornatus"</span>,   <span class="co"># Mamífero: CITES I, D.S. 004: VU</span></span>
+<span>  <span class="st">"Lagothrix flavicauda"</span>, <span class="co"># Primate endémico: CITES I, D.S. 004: CR</span></span>
+<span>  <span class="st">"Homo sapiens"</span>          <span class="co"># Especie no registrada en listas de fauna peruana</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">diagnostico</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pf_match.html">pf_match</a></span><span class="op">(</span><span class="va">especies</span><span class="op">)</span></span>
-<span><span class="va">diagnostico</span></span></code></pre></div>
+<span><span class="va">diagnostico</span></span>
+<span><span class="co">#&gt; # A tibble: 5 × 10</span></span>
+<span><span class="co">#&gt;   submitted_name       accepted_name  taxonomic_group in_peru in_unop in_pacheco</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;                &lt;chr&gt;          &lt;chr&gt;           &lt;lgl&gt;   &lt;chr&gt;   &lt;lgl&gt;     </span></span>
+<span><span class="co">#&gt; 1 Panthera onca        Panthera onca  Mammalia        TRUE    &lt;NA&gt;    TRUE      </span></span>
+<span><span class="co">#&gt; 2 Vultur gryphus       Vultur gryphus Aves            TRUE    Reside… FALSE     </span></span>
+<span><span class="co">#&gt; 3 Tremarctos ornatus   Tremarctos or… Mammalia        TRUE    &lt;NA&gt;    TRUE      </span></span>
+<span><span class="co">#&gt; 4 Lagothrix flavicauda Lagothrix fla… Mammalia        TRUE    &lt;NA&gt;    TRUE      </span></span>
+<span><span class="co">#&gt; 5 Homo sapiens         Homo sapiens   &lt;NA&gt;            FALSE   &lt;NA&gt;    FALSE     </span></span>
+<span><span class="co">#&gt; # ℹ 4 more variables: cites_appendix &lt;chr&gt;, ds004_category &lt;chr&gt;,</span></span>
+<span><span class="co">#&gt; #   is_threatened &lt;lgl&gt;, is_endemic &lt;lgl&gt;</span></span></code></pre></div>
+<div class="section level4">
+<h4 id="variables-generadas-por-pf_match">Variables Generadas por <code>pf_match()</code>:<a class="anchor" aria-label="anchor" href="#variables-generadas-por-pf_match"></a>
+</h4>
+<p><code><a href="reference/pf_match.html">pf_match()</a></code> devuelve un <code>tibble</code> de 10 variables estructuradas:</p>
+<ol style="list-style-type: decimal">
+<li>
+<code>submitted_name</code>: Nombre original ingresado por el usuario.</li>
+<li>
+<code>accepted_name</code>: Nombre binomial aceptado según el estándar taxonómico correspondiente.</li>
+<li>
+<code>taxonomic_group</code>: Clase o grupo mayor asignado (<code>"Aves"</code>, <code>"Mammalia"</code>, etc.).</li>
+<li>
+<code>in_peru</code>: Booleano (<code>TRUE</code>/<code>FALSE</code>) que confirma si la especie ocurre en territorio peruano.</li>
+<li>
+<code>in_unop</code>: Estatus en el checklist UNOP (<code>"Residente"</code>, <code>"Endémico"</code>, <code>"Migratorio"</code>, etc.).</li>
+<li>
+<code>in_pacheco</code>: <code>TRUE</code> si la especie está listada en el checklist de mamíferos de Pacheco et al. (2021).</li>
+<li>
+<code>cites_appendix</code>: Apéndice regulatorio CITES (<code>"I"</code>, <code>"II"</code>, <code>"III"</code> o <code>NA</code>).</li>
+<li>
+<code>ds004_category</code>: Categoría nacional de amenaza según D.S. 004-2014-MINAGRI (<code>"CR"</code>, <code>"EN"</code>, <code>"VU"</code>, <code>"NT"</code> o <code>NA</code>).</li>
+<li>
+<code>is_threatened</code>: <code>TRUE</code> si la especie está legalmente categorizada como amenazada a nivel nacional.</li>
+<li>
+<code>is_endemic</code>: <code>TRUE</code> si la especie es endémica de Perú.</li>
+</ol>
+<hr>
+</div>
 </div>
 <div class="section level3">
-<h3 id="resumen-rápido-pf_status">Resumen Rápido (<code>pf_status</code>)<a class="anchor" aria-label="anchor" href="#resumen-r%C3%A1pido-pf_status"></a>
+<h3 id="id_2-resumen-ejecutivo-para-informes-y-evaluaciones-pf_status">2. Resumen Ejecutivo para Informes y Evaluaciones (<code>pf_status</code>)<a class="anchor" aria-label="anchor" href="#id_2-resumen-ejecutivo-para-informes-y-evaluaciones-pf_status"></a>
 </h3>
-<p>Obtén un resumen condensado para informes o inventarios:</p>
+<p>Para elaborar cuadros técnicos, matrices de impacto ambiental o anexos de Línea Base biológica, <code><a href="reference/pf_status.html">pf_status()</a></code> genera una tabla condensada de 6 columnas:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/pf_status.html">pf_status</a></span><span class="op">(</span><span class="va">especies</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/pf_status.html">pf_status</a></span><span class="op">(</span><span class="va">especies</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 5 × 6</span></span>
+<span><span class="co">#&gt;   submitted_name  accepted_name taxonomic_group occurrence_status cites_appendix</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;           &lt;chr&gt;         &lt;chr&gt;           &lt;chr&gt;             &lt;chr&gt;         </span></span>
+<span><span class="co">#&gt; 1 Panthera onca   Panthera onca Mammalia        Residente         I             </span></span>
+<span><span class="co">#&gt; 2 Vultur gryphus  Vultur gryph… Aves            Residente         I             </span></span>
+<span><span class="co">#&gt; 3 Tremarctos orn… Tremarctos o… Mammalia        Residente         I             </span></span>
+<span><span class="co">#&gt; 4 Lagothrix flav… Lagothrix fl… Mammalia        Endémico          I             </span></span>
+<span><span class="co">#&gt; 5 Homo sapiens    Homo sapiens  &lt;NA&gt;            &lt;NA&gt;              &lt;NA&gt;          </span></span>
+<span><span class="co">#&gt; # ℹ 1 more variable: ds004_category &lt;chr&gt;</span></span></code></pre></div>
+<p>Las columnas generadas (<code>submitted_name</code>, <code>accepted_name</code>, <code>taxonomic_group</code>, <code>occurrence_status</code>, <code>cites_appendix</code>, <code>ds004_category</code>) brindan el formato directo solicitado habitualmente en expedientes oficiales.</p>
+<hr>
 </div>
+<div class="section level3">
+<h3 id="id_3-tolerancia-a-errores-tipográficos-fuzzy-matching">3. Tolerancia a Errores Tipográficos (<em>Fuzzy Matching</em>)<a class="anchor" aria-label="anchor" href="#id_3-tolerancia-a-errores-tipogr%C3%A1ficos-fuzzy-matching"></a>
+</h3>
+<p>Los inventarios de campo con frecuencia presentan variaciones ortográficas o errores de digitación. El argumento <code>max_distance</code> permite realizar concordancias aproximadas:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">especies_con_error</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Pantera onca"</span>,        <span class="co"># Falta la 'h'</span></span>
+<span>  <span class="st">"Tremarctos ornatus"</span>,  <span class="co"># Nombre correcto</span></span>
+<span>  <span class="st">"Vultur griphus"</span>       <span class="co"># 'i' en lugar de 'y'</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="reference/pf_match.html">pf_match</a></span><span class="op">(</span><span class="va">especies_con_error</span>, max_distance <span class="op">=</span> <span class="fl">0.15</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 3 × 10</span></span>
+<span><span class="co">#&gt;   submitted_name     accepted_name    taxonomic_group in_peru in_unop in_pacheco</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;              &lt;chr&gt;            &lt;chr&gt;           &lt;lgl&gt;   &lt;chr&gt;   &lt;lgl&gt;     </span></span>
+<span><span class="co">#&gt; 1 Pantera onca       Panthera onca    Mammalia        TRUE    &lt;NA&gt;    TRUE      </span></span>
+<span><span class="co">#&gt; 2 Tremarctos ornatus Tremarctos orna… Mammalia        TRUE    &lt;NA&gt;    TRUE      </span></span>
+<span><span class="co">#&gt; 3 Vultur griphus     Vultur gryphus   Aves            TRUE    Reside… FALSE     </span></span>
+<span><span class="co">#&gt; # ℹ 4 more variables: cites_appendix &lt;chr&gt;, ds004_category &lt;chr&gt;,</span></span>
+<span><span class="co">#&gt; #   is_threatened &lt;lgl&gt;, is_endemic &lt;lgl&gt;</span></span></code></pre></div>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="id_4-entrada-directa-desde-un-dataframe-o-tibble">4. Entrada Directa desde un <code>data.frame</code> o <code>tibble</code>
+<a class="anchor" aria-label="anchor" href="#id_4-entrada-directa-desde-un-dataframe-o-tibble"></a>
+</h3>
+<p><code><a href="reference/pf_match.html">pf_match()</a></code> y <code><a href="reference/pf_status.html">pf_status()</a></code> aceptan directamente tablas de datos, detectando automáticamente la columna que contiene los nombres científicos (buscando encabezados usuales como <code>scientific_name</code>, <code>species</code>, <code>nombre_cientifico</code>, <code>name</code> o <code>taxon</code>):</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">inventario</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>,</span>
+<span>  nombre_cientifico <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Panthera onca"</span>,</span>
+<span>    <span class="st">"Vultur gryphus"</span>,</span>
+<span>    <span class="st">"Tremarctos ornatus"</span>,</span>
+<span>    <span class="st">"Lagothrix flavicauda"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  localidad <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Tambopata"</span>, <span class="st">"Colca"</span>, <span class="st">"Chachapoyas"</span>, <span class="st">"Abiseo"</span><span class="op">)</span>,</span>
+<span>  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Consulta directa pasando el dataframe</span></span>
+<span><span class="va">resultado</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pf_match.html">pf_match</a></span><span class="op">(</span><span class="va">inventario</span><span class="op">)</span></span>
+<span><span class="va">resultado</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"submitted_name"</span>, <span class="st">"taxonomic_group"</span>, <span class="st">"cites_appendix"</span>, <span class="st">"ds004_category"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; # A tibble: 4 × 4</span></span>
+<span><span class="co">#&gt;   submitted_name       taxonomic_group cites_appendix ds004_category</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;                &lt;chr&gt;           &lt;chr&gt;          &lt;chr&gt;         </span></span>
+<span><span class="co">#&gt; 1 Panthera onca        Mammalia        I              NT            </span></span>
+<span><span class="co">#&gt; 2 Vultur gryphus       Aves            I              EN            </span></span>
+<span><span class="co">#&gt; 3 Tremarctos ornatus   Mammalia        I              VU            </span></span>
+<span><span class="co">#&gt; 4 Lagothrix flavicauda Mammalia        I              CR</span></span></code></pre></div>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="id_5-filtrado-rápido-de-prioridades-de-conservación">5. Filtrado Rápido de Prioridades de Conservación<a class="anchor" aria-label="anchor" href="#id_5-filtrado-r%C3%A1pido-de-prioridades-de-conservaci%C3%B3n"></a>
+</h3>
+<p>Al retornar tibbles estándar, los resultados se integran de forma natural con flujos de trabajo de análisis y filtrado:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Especies amenazadas a nivel nacional (D.S. 004-2014-MINAGRI / Libro Rojo)</span></span>
+<span><span class="va">diagnostico</span><span class="op">[</span><span class="va">diagnostico</span><span class="op">$</span><span class="va">is_threatened</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"accepted_name"</span>, <span class="st">"taxonomic_group"</span>, <span class="st">"ds004_category"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; # A tibble: 4 × 3</span></span>
+<span><span class="co">#&gt;   accepted_name        taxonomic_group ds004_category</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;                &lt;chr&gt;           &lt;chr&gt;         </span></span>
+<span><span class="co">#&gt; 1 Panthera onca        Mammalia        NT            </span></span>
+<span><span class="co">#&gt; 2 Vultur gryphus       Aves            EN            </span></span>
+<span><span class="co">#&gt; 3 Tremarctos ornatus   Mammalia        VU            </span></span>
+<span><span class="co">#&gt; 4 Lagothrix flavicauda Mammalia        CR</span></span>
+<span></span>
+<span><span class="co"># Especies en el Apéndice I de CITES (máxima restricción internacional)</span></span>
+<span><span class="va">diagnostico</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">diagnostico</span><span class="op">$</span><span class="va">cites_appendix</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">diagnostico</span><span class="op">$</span><span class="va">cites_appendix</span> <span class="op">==</span> <span class="st">"I"</span>, </span>
+<span>            <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"accepted_name"</span>, <span class="st">"cites_appendix"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; # A tibble: 4 × 2</span></span>
+<span><span class="co">#&gt;   accepted_name        cites_appendix</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;                &lt;chr&gt;         </span></span>
+<span><span class="co">#&gt; 1 Panthera onca        I             </span></span>
+<span><span class="co">#&gt; 2 Vultur gryphus       I             </span></span>
+<span><span class="co">#&gt; 3 Tremarctos ornatus   I             </span></span>
+<span><span class="co">#&gt; 4 Lagothrix flavicauda I</span></span>
+<span></span>
+<span><span class="co"># Especies endémicas del Perú</span></span>
+<span><span class="va">diagnostico</span><span class="op">[</span><span class="va">diagnostico</span><span class="op">$</span><span class="va">is_endemic</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"accepted_name"</span>, <span class="st">"taxonomic_group"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; # A tibble: 1 × 2</span></span>
+<span><span class="co">#&gt;   accepted_name        taxonomic_group</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;                &lt;chr&gt;          </span></span>
+<span><span class="co">#&gt; 1 Lagothrix flavicauda Mammalia</span></span></code></pre></div>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="id_6-diagnóstico-y-monitoreo-del-entorno">6. Diagnóstico y Monitoreo del Entorno<a class="anchor" aria-label="anchor" href="#id_6-diagn%C3%B3stico-y-monitoreo-del-entorno"></a>
+</h3>
+<p><code>perufauna</code> incluye herramientas para diagnosticar el estado del ecosistema y monitorear versiones y posibles conflictos:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Reporte de situación de dependencias y versiones</span></span>
+<span><span class="fu"><a href="reference/perufauna_sitrep.html">perufauna_sitrep</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ── R Environment ───────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; • R: 4.6.1</span></span>
+<span><span class="co">#&gt; • perufauna: 0.1.0.9000</span></span>
+<span><span class="co">#&gt; ── Core Biodiversity Packages ──────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; • avesperu         (v0.1.1.9000)</span></span>
+<span><span class="co">#&gt; • perumammals      (v0.1.0.9000)</span></span>
+<span><span class="co">#&gt; • citesperu        (v0.1.0)</span></span>
+<span><span class="co">#&gt; • perufaunads004   (v0.1.0)</span></span>
+<span></span>
+<span><span class="co"># Listado estructurado de versiones locales instaladas</span></span>
+<span><span class="fu"><a href="reference/perufauna_deps.html">perufauna_deps</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 4 × 3</span></span>
+<span><span class="co">#&gt;   package        installed local_version</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;          &lt;lgl&gt;     &lt;chr&gt;        </span></span>
+<span><span class="co">#&gt; 1 avesperu       TRUE      0.1.1.9000   </span></span>
+<span><span class="co">#&gt; 2 perumammals    TRUE      0.1.0.9000   </span></span>
+<span><span class="co">#&gt; 3 citesperu      TRUE      0.1.0        </span></span>
+<span><span class="co">#&gt; 4 perufaunads004 TRUE      0.1.0</span></span>
+<span></span>
+<span><span class="co"># Verificación de conflictos entre espacios de nombres cargados</span></span>
+<span><span class="fu"><a href="reference/perufauna_conflicts.html">perufauna_conflicts</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<hr>
+</div>
+</div>
+<div class="section level2">
+<h2 id="citación">Citación<a class="anchor" aria-label="anchor" href="#citaci%C3%B3n"></a>
+</h2>
+<p>Si utilizas <strong>perufauna</strong> o cualquiera de sus paquetes miembros en publicaciones científicas, consultorías o reportes técnicos, por favor cita el metapaquete y las fuentes taxonómicas y normativas correspondientes:</p>
+<pre class="text"><code>Santos Andrade, P. E. (2026). perufauna: Easily Load and Harmonize Peruvian Fauna
+and Biodiversity Packages. R package version 0.1.0.9000.
+https://paulesantos.github.io/perufauna/</code></pre>
+<div class="section level3">
+<h3 id="fuentes-primarias-integradas">Fuentes Primarias Integradas:<a class="anchor" aria-label="anchor" href="#fuentes-primarias-integradas"></a>
+</h3>
+<ul>
+<li>
+<strong>Aves del Perú:</strong> Plenge, M. A., &amp; Angulo, F. (2026). <em>Lista de las aves del Perú / List of the birds of Peru</em>. Unión de Ornitólogos del Perú (UNOP).</li>
+<li>
+<strong>Mamíferos del Perú:</strong> Pacheco, V., Graham-Angles, R., Aguilar, L., et al. (2021). <em>Diversidad y endemismo de los mamíferos del Perú</em>. Revista Peruana de Biología, 28(especial).</li>
+<li>
+<strong>Estatus CITES:</strong> Ministerio del Ambiente (MINAM). <em>Listado Oficial de Especies de Fauna y Flora Silvestre en los Apéndices CITES para el Perú</em>.</li>
+<li>
+<strong>Fauna Amenazada:</strong> Servicio Nacional Forestal y de Fauna Silvestre (SERFOR) / MINAGRI. <em>Decreto Supremo N° 004-2014-MINAGRI y Libro Rojo de la Fauna Silvestre Amenazada del Perú</em>.</li>
+</ul>
+<hr>
+</div>
+</div>
+<div class="section level2">
+<h2 id="documentación-y-enlaces">Documentación y Enlaces<a class="anchor" aria-label="anchor" href="#documentaci%C3%B3n-y-enlaces"></a>
+</h2>
+<ul>
+<li>
+<strong>Sitio Web de Documentación:</strong> <a href="https://paulesantos.github.io/perufauna/" class="uri">https://paulesantos.github.io/perufauna/</a>
+</li>
+<li>
+<strong>Vignette Detallada:</strong> <a href="https://paulesantos.github.io/perufauna/articles/uso-pf-match-pf-status.html">Uso Integrado de pf_match() y pf_status()</a>
+</li>
+<li>
+<strong>Código Fuente y Reporte de Problemas:</strong> <a href="https://github.com/PaulESantos/perufauna" class="external-link">GitHub Repository</a>
+</li>
+<li>
+<strong>Estándares del Ecosistema:</strong> <a href="ECOSYSTEM_STANDARDS.html">ECOSYSTEM_STANDARDS.md</a>
+</li>
+</ul>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="licencia">Licencia<a class="anchor" aria-label="anchor" href="#licencia"></a>
+</h2>
+<p>Este proyecto se distribuye bajo la licencia <strong>MIT</strong>. Consulta el archivo <a href="LICENSE">LICENSE</a> para más detalles.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -159,8 +439,9 @@
 <li><a href="https://CRAN.R-project.org/package=perufauna" class="external-link"><img src="https://www.r-pkg.org/badges/version/perufauna" alt="CRAN status"></a></li>
 <li><a href="https://github.com/PaulESantos/perufauna/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/PaulESantos/perufauna/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://cran.r-project.org/package=perufauna" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/perufauna?color=green" alt="CRAN downloads"></a></li>
-<li><a href="https://cran.r-project.org/package=perufauna" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/last-week/perufauna?color=green" alt="CRAN weekly downloads"></a></li>
+<li><a href="https://cran.r-pkg.org/package=perufauna" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/last-week/perufauna?color=green" alt="CRAN weekly downloads"></a></li>
 <li><a href="https://app.codecov.io/gh/PaulESantos/perufauna" class="external-link"><img src="https://codecov.io/gh/PaulESantos/perufauna/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a></li>
 </ul>
 </div>
 
