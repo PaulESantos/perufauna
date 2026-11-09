@@ -16,11 +16,7 @@ knitr::opts_chunk$set(
 # perufauna
 
 <!-- badges: start -->
-[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-green.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
-[![CRAN status](https://www.r-pkg.org/badges/version/perufauna)](https://CRAN.R-project.org/package=perufauna)
 [![R-CMD-check](https://github.com/PaulESantos/perufauna/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/PaulESantos/perufauna/actions/workflows/R-CMD-check.yaml)
-[![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/perufauna?color=green)](https://cran.r-project.org/package=perufauna)
-[![CRAN weekly downloads](https://cranlogs.r-pkg.org/badges/last-week/perufauna?color=green)](https://cran.r-pkg.org/package=perufauna)
 [![Codecov test coverage](https://codecov.io/gh/PaulESantos/perufauna/graph/badge.svg)](https://app.codecov.io/gh/PaulESantos/perufauna)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
@@ -102,12 +98,12 @@ diagnostico
 1. `submitted_name`: Nombre original ingresado por el usuario.
 2. `accepted_name`: Nombre binomial aceptado según el estándar taxonómico correspondiente.
 3. `taxonomic_group`: Clase o grupo mayor asignado (`"Aves"`, `"Mammalia"`, etc.).
-4. `in_peru`: Booleano (`TRUE`/`FALSE`) que confirma si la especie ocurre en territorio peruano.
+4. `in_peru`: `TRUE` si figura en UNOP, Pacheco o referencias nacionales de fauna. CITES por sí solo no confirma presencia en Perú.
 5. `in_unop`: Estatus en el checklist UNOP (`"Residente"`, `"Endémico"`, `"Migratorio"`, etc.).
 6. `in_pacheco`: `TRUE` si la especie está listada en el checklist de mamíferos de Pacheco et al. (2021).
 7. `cites_appendix`: Apéndice regulatorio CITES (`"I"`, `"II"`, `"III"` o `NA`).
-8. `ds004_category`: Categoría nacional de amenaza según D.S. 004-2014-MINAGRI (`"CR"`, `"EN"`, `"VU"`, `"NT"` o `NA`).
-9. `is_threatened`: `TRUE` si la especie está legalmente categorizada como amenazada a nivel nacional.
+8. `ds004_category`: Categoría D.S. 004 o, si falta, categoría del Libro Rojo SERFOR.
+9. `is_threatened`: `TRUE` si figura en D.S. 004 o el Libro Rojo. La inclusión solo en el Libro Rojo no establece protección legal.
 10. `is_endemic`: `TRUE` si la especie es endémica de Perú.
 
 ---
@@ -126,7 +122,7 @@ Las columnas generadas (`submitted_name`, `accepted_name`, `taxonomic_group`, `o
 
 ### 3. Tolerancia a Errores Tipográficos (*Fuzzy Matching*)
 
-Los inventarios de campo con frecuencia presentan variaciones ortográficas o errores de digitación. El argumento `max_distance` permite realizar concordancias aproximadas:
+Los inventarios de campo con frecuencia presentan errores de digitación. `max_distance` controla la distancia relativa en `avesperu` (por defecto `0.1`); `max_edit_distance` controla el número entero de ediciones en CITES y D.S. 004 (por defecto `1`). El motor de mamíferos usa sus propias reglas:
 
 ```{r}
 especies_con_error <- c(
@@ -135,14 +131,14 @@ especies_con_error <- c(
   "Vultur griphus"       # 'i' en lugar de 'y'
 )
 
-pf_match(especies_con_error, max_distance = 0.15)
+pf_match(especies_con_error, max_distance = 0.15, max_edit_distance = 1)
 ```
 
 ---
 
 ### 4. Entrada Directa desde un `data.frame` o `tibble`
 
-`pf_match()` y `pf_status()` aceptan directamente tablas de datos, detectando automáticamente la columna que contiene los nombres científicos (buscando encabezados usuales como `scientific_name`, `species`, `nombre_cientifico`, `name` o `taxon`):
+`pf_match()` y `pf_status()` aceptan tablas de datos y detectan encabezados usuales como `scientific_name`, `species`, `nombre_cientifico`, `name` o `taxon`. Para una columna con otro nombre, utiliza `name_col = "mi_columna"`:
 
 ```{r}
 inventario <- data.frame(
@@ -205,7 +201,7 @@ Si utilizas **perufauna** o cualquiera de sus paquetes miembros en publicaciones
 
 ```text
 Santos Andrade, P. E. (2026). perufauna: Easily Load and Harmonize Peruvian Fauna
-and Biodiversity Packages. R package version 0.1.0.9000.
+and Biodiversity Packages. R package version 0.1.0.
 https://paulesantos.github.io/perufauna/
 ```
 
@@ -223,7 +219,6 @@ https://paulesantos.github.io/perufauna/
 * **Sitio Web de Documentación:** [https://paulesantos.github.io/perufauna/](https://paulesantos.github.io/perufauna/)
 * **Vignette Detallada:** [Uso Integrado de pf_match() y pf_status()](https://paulesantos.github.io/perufauna/articles/uso-pf-match-pf-status.html)
 * **Código Fuente y Reporte de Problemas:** [GitHub Repository](https://github.com/PaulESantos/perufauna)
-* **Estándares del Ecosistema:** [ECOSYSTEM_STANDARDS.md](ECOSYSTEM_STANDARDS.md)
 
 ---
 

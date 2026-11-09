@@ -4,15 +4,21 @@
 \alias{pf_match}
 \title{Cross-Referenced Taxonomic and Conservation Matching for Peruvian Fauna}
 \usage{
-pf_match(splist, max_distance = 0.1, ...)
+pf_match(splist, max_distance = 0.1, max_edit_distance = 1L, name_col = NULL)
 }
 \arguments{
 \item{splist}{Character vector of scientific names to validate, or a \code{data.frame}
 containing a column with species names.}
 
-\item{max_distance}{Numeric. Maximum string distance allowed for fuzzy matching (default: 0.1).}
+\item{max_distance}{Non-negative numeric distance used by \code{avesperu}.
+Values below 1 are relative to the name length (default: 0.1).}
 
-\item{...}{Additional arguments passed to underlying matching engines.}
+\item{max_edit_distance}{Non-negative whole number of edits allowed by
+\code{citesperu} and \code{perufaunads004} (default: 1). The mammal matcher uses
+its own matching rules.}
+
+\item{name_col}{Name of the scientific-name column when \code{splist} is a
+data frame. If omitted, a common column name is detected automatically.}
 }
 \value{
 A \code{tibble::tibble} with harmonized cross-database columns:
@@ -20,12 +26,15 @@ A \code{tibble::tibble} with harmonized cross-database columns:
 \item \code{submitted_name}: The raw input name.
 \item \code{accepted_name}: Validated/accepted scientific binomial name.
 \item \code{taxonomic_group}: Taxonomic class/group ("Aves", "Mammalia", "Reptilia", "Amphibia", etc.).
-\item \code{in_peru}: Logical. Confirmed presence in Peru via UNOP, Pacheco, or D.S. 004.
+\item \code{in_peru}: Logical. Listed in a Peruvian bird, mammal, or
+national fauna reference. CITES inclusion alone does not establish occurrence.
 \item \code{in_unop}: Character. UNOP bird status ("Residente", "Endémico", "Divagante", "Migratorio", "Introducido", "No confirmado", or NA).
 \item \code{in_pacheco}: Logical. Listed in Pacheco et al. (2021) Peru Mammals.
 \item \code{cites_appendix}: CITES status ("I", "II", "III", or NA).
-\item \code{ds004_category}: National threat category ("CR", "EN", "VU", "NT", or NA).
-\item \code{is_threatened}: Logical. Listed under national threat (D.S. 004 or Libro Rojo).
+\item \code{ds004_category}: Category from D.S. 004, or from the SERFOR
+Red Book when the species is absent from D.S. 004.
+\item \code{is_threatened}: Logical. Listed in D.S. 004 or the SERFOR Red Book;
+Red Book inclusion alone does not establish legal protection.
 \item \code{is_endemic}: Logical. Endemic to Peru (based on UNOP or Pacheco).
 }
 }

@@ -18,7 +18,9 @@ A \code{tibble::tibble} with 6 atomized columns:
 \item \code{submitted_name}: The raw input name.
 \item \code{accepted_name}: Validated/accepted scientific binomial name.
 \item \code{taxonomic_group}: Taxonomic class/group ("Aves", "Mammalia", etc., or NA).
-\item \code{occurrence_status}: Occurrence or residency status in Peru ("Residente", "Endémico", "Divagante", "Migratorio", etc., or NA).
+\item \code{occurrence_status}: UNOP status for birds, "Endémico" for
+endemic mammals, "Registrado en Perú" for other taxa listed in a
+Peruvian reference, or NA when occurrence is not established.
 \item \code{cites_appendix}: CITES appendix ("I", "II", "III", or NA).
 \item \code{ds004_category}: National threat category under D.S. 004-2014-MINAGRI ("CR", "EN", "VU", "NT", or NA).
 }

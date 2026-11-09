@@ -43,6 +43,41 @@ test_that("pf_match accepts data.frame input", {
   expect_true(all(res$in_peru))
 })
 
+test_that("CITES listing alone does not establish occurrence in Peru", {
+  res <- pf_match("Cedrela odorata")
+  expect_false(res$in_peru)
+  expect_false(res$is_threatened)
+  expect_false(is.na(res$cites_appendix))
+  expect_true(is.na(pf_status("Cedrela odorata")$occurrence_status))
+})
+
+test_that("matching controls and name column are validated", {
+  expect_error(pf_match("Vultur gryphus", max_distance = -1), "max_distance")
+  expect_error(pf_match("Vultur gryphus", max_edit_distance = 0.5), "max_edit_distance")
+  expect_error(pf_match(data.frame(id = 1, label = "Vultur gryphus")), "name_col")
+  expect_equal(pf_match(data.frame(id = 1, label = "Vultur gryphus"),
+                        name_col = "label")$taxonomic_group, "Aves")
+})
+
+test_that("CRAN perumammals works without a preloaded global dataset", {
+  if (utils::packageVersion("perumammals") >= "0.1.0") {
+    skip("The newer perumammals release loads its own data")
+  }
+  had_global <- exists("peru_mammals", envir = .GlobalEnv, inherits = FALSE)
+  if (had_global) {
+    previous <- get("peru_mammals", envir = .GlobalEnv, inherits = FALSE)
+    rm(list = "peru_mammals", envir = .GlobalEnv)
+  }
+  on.exit({
+    if (had_global) assign("peru_mammals", previous, envir = .GlobalEnv)
+  }, add = TRUE)
+
+  search_before <- search()
+  expect_true(pf_match("Panthera onca")$in_pacheco)
+  expect_false(exists("peru_mammals", envir = .GlobalEnv, inherits = FALSE))
+  expect_identical(search(), search_before)
+})
+
 test_that("pf_match reports correct status for endemic and vagrant birds", {
   res <- pf_match(c("Loddigesia mirabilis", "Aptenodytes patagonicus"))
   expect_equal(res$in_unop, c("Endémico", "Divagante"))

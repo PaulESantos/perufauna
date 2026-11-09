@@ -14,7 +14,7 @@ test_that("pf_status returns atomized tibble summaries", {
 
   # Panthera onca
   expect_equal(st$taxonomic_group[1], "Mammalia")
-  expect_equal(st$occurrence_status[1], "Residente")
+  expect_equal(st$occurrence_status[1], "Registrado en Per\u00fa")
   expect_equal(st$cites_appendix[1], "I")
   expect_equal(st$ds004_category[1], "NT")
 

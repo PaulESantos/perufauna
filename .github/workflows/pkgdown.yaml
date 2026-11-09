@@ -36,8 +36,6 @@ jobs:
           extra-packages: |
             any::pkgdown
             local::.
-            github::PaulESantos/citesperu
-            github::PaulESantos/perufaunads004
           needs: website
 
       - name: Build site
