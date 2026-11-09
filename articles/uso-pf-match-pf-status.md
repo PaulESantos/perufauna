@@ -14,9 +14,10 @@ fuentes oficiales independientes:
     Perú (`perumammals` / Pacheco et al., 2021).
 3.  **Comercio Internacional (CITES):** Apéndices I, II y III del
     Ministerio del Ambiente (`citesperu` / MINAM).
-4.  **Categorización Nacional de Amenaza:** Especies amenazadas y
-    protegidas legalmente según el Decreto Supremo N° 004-2014-MINAGRI y
-    el Libro Rojo de SERFOR (`perufaunads004`).
+4.  **Categorización Nacional de Amenaza:** Especies incluidas en el
+    Decreto Supremo N° 004-2014-MINAGRI o el Libro Rojo de SERFOR
+    (`perufaunads004`). El Libro Rojo no establece protección legal por
+    sí solo.
 
 Tradicionalmente, realizar esta verificación demandaba consultar cada
 base de datos por separado, cruzar identificadores manualmente y
@@ -51,8 +52,8 @@ centrales, puedes consultar
 
 perufauna_sitrep()
 #> ── R Environment ───────────────────────────────────────────────────────────────
-#> • R: 4.6.1
-#> • perufauna: 0.1.0.9000
+#> • R: 4.6.2
+#> • perufauna: 0.1.0
 #> ── Core Biodiversity Packages ──────────────────────────────────────────────────
 #> • avesperu         (v0.1.1)
 #> • perumammals      (v0.0.0.2)
@@ -71,8 +72,8 @@ aves, mamíferos, CITES y fauna amenazada.
 
 ### Consulta con un vector de especies representativas
 
-Evaluemos un conjunto diverso de fauna que incluye aves, mamíferos,
-especies amenazadas, endémicas y un taxón foráneo:
+Evaluemos un conjunto de aves, mamíferos, especies amenazadas, endémicas
+y un taxón ausente de los catálogos de fauna consultados:
 
 ``` r
 
@@ -109,12 +110,12 @@ es un `tibble` consistente de 10 columnas:
 | `submitted_name` | `character` | Nombre científico tal como fue ingresado por el usuario. |
 | `accepted_name` | `character` | Nombre binomial validado y aceptado según el estándar taxonómico. |
 | `taxonomic_group` | `character` | Clase o grupo biológico mayor (`"Aves"`, `"Mammalia"`, etc.). |
-| `in_peru` | `logical` | `TRUE` si la especie cuenta con presencia confirmada en el Perú. |
+| `in_peru` | `logical` | `TRUE` si figura en UNOP, Pacheco o referencias nacionales de fauna; CITES solo no confirma presencia. |
 | `in_unop` | `character` | Estatus en el checklist UNOP (`"Residente"`, `"Endémico"`, `"Migratorio"`, etc.). |
 | `in_pacheco` | `logical` | `TRUE` si figura en el checklist de mamíferos de Pacheco et al. (2021). |
 | `cites_appendix` | `character` | Apéndice CITES asignado (`"I"`, `"II"`, `"III"` o `NA`). |
-| `ds004_category` | `character` | Categoría legal de amenaza nacional (`"CR"`, `"EN"`, `"VU"`, `"NT"` o `NA`). |
-| `is_threatened` | `logical` | `TRUE` si está legalmente categorizada como amenazada. |
+| `ds004_category` | `character` | Categoría D.S. 004 o, en su ausencia, del Libro Rojo SERFOR. |
+| `is_threatened` | `logical` | `TRUE` si figura en D.S. 004 o el Libro Rojo; este último no establece protección legal por sí solo. |
 | `is_endemic` | `logical` | `TRUE` si la especie es endémica del territorio peruano. |
 
 ------------------------------------------------------------------------
@@ -122,9 +123,10 @@ es un `tibble` consistente de 10 columnas:
 ## 4. Tolerancia a Errores Tipográficos (*Fuzzy Matching*)
 
 Los inventarios de campo a menudo contienen erratas de digitación.
-[`pf_match()`](https://paulesantos.github.io/perufauna/reference/pf_match.md)
-incluye el argumento `max_distance` (por defecto `0.1`), permitiendo
-concordancias aproximadas:
+`max_distance` controla la distancia relativa de `avesperu` (por defecto
+`0.1`) y `max_edit_distance` el número entero de ediciones en CITES y
+D.S. 004 (por defecto `1`). El motor de mamíferos usa sus propias
+reglas:
 
 ``` r
 
@@ -134,7 +136,7 @@ especies_con_error <- c(
   "Vultur griphus"       # 'i' en vez de 'y'
 )
 
-pf_match(especies_con_error, max_distance = 0.15)
+pf_match(especies_con_error, max_distance = 0.15, max_edit_distance = 1)
 #> # A tibble: 3 × 10
 #>   submitted_name     accepted_name    taxonomic_group in_peru in_unop in_pacheco
 #>   <chr>              <chr>            <chr>           <lgl>   <chr>   <lgl>     
@@ -202,9 +204,9 @@ status_resumen
 #> # A tibble: 5 × 6
 #>   submitted_name  accepted_name taxonomic_group occurrence_status cites_appendix
 #>   <chr>           <chr>         <chr>           <chr>             <chr>         
-#> 1 Panthera onca   Panthera onca Mammalia        Residente         I             
+#> 1 Panthera onca   Panthera onca Mammalia        Registrado en Pe… I             
 #> 2 Vultur gryphus  Vultur gryph… Aves            Residente         I             
-#> 3 Tremarctos orn… Tremarctos o… Mammalia        Residente         I             
+#> 3 Tremarctos orn… Tremarctos o… Mammalia        Registrado en Pe… I             
 #> 4 Lagothrix flav… Lagothrix fl… Mammalia        Endémico          I             
 #> 5 Homo sapiens    Homo sapiens  NA              NA                NA            
 #> # ℹ 1 more variable: ds004_category <chr>
@@ -215,8 +217,9 @@ status_resumen
 1.  `submitted_name`: Nombre original consultado.
 2.  `accepted_name`: Nombre binomial aceptado.
 3.  `taxonomic_group`: Grupo taxonómico (`"Mammalia"`, `"Aves"`, etc.).
-4.  `occurrence_status`: Estatus de permanencia (`"Residente"`,
-    `"Endémico"`, `"Divagante"`, `"Migratorio"`, etc.).
+4.  `occurrence_status`: Estatus UNOP para aves, `"Endémico"` para
+    mamíferos endémicos, `"Registrado en Perú"` para otras especies
+    documentadas o `NA` si no se establece presencia.
 5.  `cites_appendix`: Apéndice regulatorio CITES (`"I"`, `"II"`,
     `"III"`).
 6.  `ds004_category`: Categoría nacional de amenaza (`"CR"`, `"EN"`,
@@ -234,7 +237,7 @@ se integran naturalmente con operaciones de filtrado y resumen:
 
 ``` r
 
-# Filtrar especies amenazadas según la normativa nacional (D.S. 004-2014-MINAGRI)
+# Filtrar especies en D.S. 004 o el Libro Rojo SERFOR
 amenazadas <- resultado_match[resultado_match$is_threatened, ]
 amenazadas[, c("accepted_name", "taxonomic_group", "ds004_category")]
 #> # A tibble: 4 × 3

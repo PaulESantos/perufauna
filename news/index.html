@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">perufauna</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.1.0.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,11 +39,11 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="perufauna-development-version">perufauna (development version)<a class="anchor" aria-label="anchor" href="#perufauna-development-version"></a></h2>
-<div class="section level3">
-<h3 id="perufauna-development-version-1">perufauna 0.1.0.9000<a class="anchor" aria-label="anchor" href="#perufauna-development-version-1"></a></h3>
-<ul><li>
-<strong><code><a href="../reference/pf_match.html">pf_match()</a></code></strong>: Harmonized cross-database biodiversity query across four specialized Peruvian backbones:
+<h2 class="pkg-version" data-toc-text="0.1.0" id="perufauna-010">perufauna 0.1.0<a class="anchor" aria-label="anchor" href="#perufauna-010"></a></h2>
+<ul><li><p>First CRAN release. Matching now separates the relative bird distance from integer edit distances used by CITES and D.S. 004.</p></li>
+<li><p>CITES inclusion alone no longer establishes occurrence in Peru. Lookup failures report the affected source instead of silently returning negatives.</p></li>
+<li>
+<p><strong><code><a href="../reference/pf_match.html">pf_match()</a></code></strong>: Harmonized cross-database biodiversity query across four specialized Peruvian backbones:</p>
 <ul><li>
 <code>avesperu</code>: UNOP Bird Checklist of Peru, reporting qualitative status (<code>"Residente"</code>, <code>"Endémico"</code>, <code>"Divagante"</code>, <code>"Migratorio"</code>, etc.).</li>
 <li>
@@ -53,10 +53,9 @@
 <li>
 <code>perufaunads004</code>: D.S. No. 004-2014-MINAGRI &amp; SERFOR Threatened Fauna Red Book.</li>
 </ul></li>
+<li><p><strong><code><a href="../reference/pf_status.html">pf_status()</a></code></strong>: Structured, reproducible <code>tibble</code> summarizing taxonomic group, occurrence/residency status, CITES appendix, and D.S. 004 threat status.</p></li>
 <li>
-<strong><code><a href="../reference/pf_status.html">pf_status()</a></code></strong>: Structured, reproducible <code>tibble</code> summarizing taxonomic group, occurrence/residency status, CITES appendix, and D.S. 004 threat status.</li>
-<li>
-<strong>Metapackage Orchestration</strong>:
+<p><strong>Metapackage Orchestration</strong>:</p>
 <ul><li>
 <code><a href="../reference/perufauna_attach.html">perufauna_attach()</a></code>: Attach ecosystem packages with clean startup messages.</li>
 <li>
@@ -71,9 +70,7 @@
 <code><a href="../reference/perufauna_logo.html">perufauna_logo()</a></code>: Render ASCII banner.</li>
 </ul></li>
 </ul></div>
-</div>
-  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
-    </nav></aside></div>
+  </main></div>
 
 
     <footer><div class="pkgdown-footer-left">

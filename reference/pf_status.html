@@ -11,7 +11,7 @@ occurrence/residency status in Peru, CITES appendix, and national threat categor
 
     <a class="navbar-brand me-2" href="../index.html">perufauna</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.1.0.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,7 +72,9 @@ containing species names.</p></dd>
     <p>A <code><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble::tibble</a></code> with 6 atomized columns:</p><ul><li><p><code>submitted_name</code>: The raw input name.</p></li>
 <li><p><code>accepted_name</code>: Validated/accepted scientific binomial name.</p></li>
 <li><p><code>taxonomic_group</code>: Taxonomic class/group ("Aves", "Mammalia", etc., or NA).</p></li>
-<li><p><code>occurrence_status</code>: Occurrence or residency status in Peru ("Residente", "Endémico", "Divagante", "Migratorio", etc., or NA).</p></li>
+<li><p><code>occurrence_status</code>: UNOP status for birds, "Endémico" for
+endemic mammals, "Registrado en Perú" for other taxa listed in a
+Peruvian reference, or NA when occurrence is not established.</p></li>
 <li><p><code>cites_appendix</code>: CITES appendix ("I", "II", "III", or NA).</p></li>
 <li><p><code>ds004_category</code>: National threat category under D.S. 004-2014-MINAGRI ("CR", "EN", "VU", "NT", or NA).</p></li>
 </ul></div>
@@ -84,9 +86,9 @@ containing species names.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 3 × 6</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   submitted_name  accepted_name taxonomic_group occurrence_status cites_appendix</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Panthera onca   Panthera onca Mammalia        Residente         I             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Panthera onca   Panthera onca Mammalia        Registrado en Pe… I             </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Vultur gryphus  Vultur gryph… Aves            Residente         I             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> Tremarctos orn… Tremarctos o… Mammalia        Residente         I             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> Tremarctos orn… Tremarctos o… Mammalia        Registrado en Pe… I             </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 1 more variable: ds004_category &lt;chr&gt;</span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>

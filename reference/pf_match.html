@@ -21,7 +21,7 @@ perufaunads004: D.S. No. 004-2014-MINAGRI &amp;amp; SERFOR Threatened Fauna Red 
 
     <a class="navbar-brand me-2" href="../index.html">perufauna</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.1.0.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,7 +63,7 @@ Peruvian biodiversity databases:</p><ul><li><p><code>avesperu</code>: UNOP Bird 
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pf_match</span><span class="op">(</span><span class="va">splist</span>, max_distance <span class="op">=</span> <span class="fl">0.1</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pf_match</span><span class="op">(</span><span class="va">splist</span>, max_distance <span class="op">=</span> <span class="fl">0.1</span>, max_edit_distance <span class="op">=</span> <span class="fl">1L</span>, name_col <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -76,11 +76,19 @@ containing a column with species names.</p></dd>
 
 
 <dt id="arg-max-distance">max_distance<a class="anchor" aria-label="anchor" href="#arg-max-distance"></a></dt>
-<dd><p>Numeric. Maximum string distance allowed for fuzzy matching (default: 0.1).</p></dd>
+<dd><p>Non-negative numeric distance used by <code>avesperu</code>.
+Values below 1 are relative to the name length (default: 0.1).</p></dd>
 
 
-<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional arguments passed to underlying matching engines.</p></dd>
+<dt id="arg-max-edit-distance">max_edit_distance<a class="anchor" aria-label="anchor" href="#arg-max-edit-distance"></a></dt>
+<dd><p>Non-negative whole number of edits allowed by
+<code>citesperu</code> and <code>perufaunads004</code> (default: 1). The mammal matcher uses
+its own matching rules.</p></dd>
+
+
+<dt id="arg-name-col">name_col<a class="anchor" aria-label="anchor" href="#arg-name-col"></a></dt>
+<dd><p>Name of the scientific-name column when <code>splist</code> is a
+data frame. If omitted, a common column name is detected automatically.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -88,12 +96,15 @@ containing a column with species names.</p></dd>
     <p>A <code><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble::tibble</a></code> with harmonized cross-database columns:</p><ul><li><p><code>submitted_name</code>: The raw input name.</p></li>
 <li><p><code>accepted_name</code>: Validated/accepted scientific binomial name.</p></li>
 <li><p><code>taxonomic_group</code>: Taxonomic class/group ("Aves", "Mammalia", "Reptilia", "Amphibia", etc.).</p></li>
-<li><p><code>in_peru</code>: Logical. Confirmed presence in Peru via UNOP, Pacheco, or D.S. 004.</p></li>
+<li><p><code>in_peru</code>: Logical. Listed in a Peruvian bird, mammal, or
+national fauna reference. CITES inclusion alone does not establish occurrence.</p></li>
 <li><p><code>in_unop</code>: Character. UNOP bird status ("Residente", "Endémico", "Divagante", "Migratorio", "Introducido", "No confirmado", or NA).</p></li>
 <li><p><code>in_pacheco</code>: Logical. Listed in Pacheco et al. (2021) Peru Mammals.</p></li>
 <li><p><code>cites_appendix</code>: CITES status ("I", "II", "III", or NA).</p></li>
-<li><p><code>ds004_category</code>: National threat category ("CR", "EN", "VU", "NT", or NA).</p></li>
-<li><p><code>is_threatened</code>: Logical. Listed under national threat (D.S. 004 or Libro Rojo).</p></li>
+<li><p><code>ds004_category</code>: Category from D.S. 004, or from the SERFOR
+Red Book when the species is absent from D.S. 004.</p></li>
+<li><p><code>is_threatened</code>: Logical. Listed in D.S. 004 or the SERFOR Red Book;
+Red Book inclusion alone does not establish legal protection.</p></li>
 <li><p><code>is_endemic</code>: Logical. Endemic to Peru (based on UNOP or Pacheco).</p></li>
 </ul></div>
 

@@ -15,7 +15,7 @@ specialized Peruvian biodiversity databases:
 ## Usage
 
 ``` r
-pf_match(splist, max_distance = 0.1, ...)
+pf_match(splist, max_distance = 0.1, max_edit_distance = 1L, name_col = NULL)
 ```
 
 ## Arguments
@@ -27,12 +27,19 @@ pf_match(splist, max_distance = 0.1, ...)
 
 - max_distance:
 
-  Numeric. Maximum string distance allowed for fuzzy matching (default:
-  0.1).
+  Non-negative numeric distance used by `avesperu`. Values below 1 are
+  relative to the name length (default: 0.1).
 
-- ...:
+- max_edit_distance:
 
-  Additional arguments passed to underlying matching engines.
+  Non-negative whole number of edits allowed by `citesperu` and
+  `perufaunads004` (default: 1). The mammal matcher uses its own
+  matching rules.
+
+- name_col:
+
+  Name of the scientific-name column when `splist` is a data frame. If
+  omitted, a common column name is detected automatically.
 
 ## Value
 
@@ -46,8 +53,8 @@ with harmonized cross-database columns:
 - `taxonomic_group`: Taxonomic class/group ("Aves", "Mammalia",
   "Reptilia", "Amphibia", etc.).
 
-- `in_peru`: Logical. Confirmed presence in Peru via UNOP, Pacheco, or
-  D.S. 004.
+- `in_peru`: Logical. Listed in a Peruvian bird, mammal, or national
+  fauna reference. CITES inclusion alone does not establish occurrence.
 
 - `in_unop`: Character. UNOP bird status ("Residente", "Endémico",
   "Divagante", "Migratorio", "Introducido", "No confirmado", or NA).
@@ -56,11 +63,11 @@ with harmonized cross-database columns:
 
 - `cites_appendix`: CITES status ("I", "II", "III", or NA).
 
-- `ds004_category`: National threat category ("CR", "EN", "VU", "NT", or
-  NA).
+- `ds004_category`: Category from D.S. 004, or from the SERFOR Red Book
+  when the species is absent from D.S. 004.
 
-- `is_threatened`: Logical. Listed under national threat (D.S. 004 or
-  Libro Rojo).
+- `is_threatened`: Logical. Listed in D.S. 004 or the SERFOR Red Book;
+  Red Book inclusion alone does not establish legal protection.
 
 - `is_endemic`: Logical. Endemic to Peru (based on UNOP or Pacheco).
 

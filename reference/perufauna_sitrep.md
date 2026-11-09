@@ -16,8 +16,8 @@ perufauna_sitrep()
 # \donttest{
 perufauna_sitrep()
 #> ── R Environment ───────────────────────────────────────────────────────────────
-#> • R: 4.6.1
-#> • perufauna: 0.1.0.9000
+#> • R: 4.6.2
+#> • perufauna: 0.1.0
 #> ── Core Biodiversity Packages ──────────────────────────────────────────────────
 #> • avesperu         (v0.1.1)
 #> • perumammals      (v0.0.0.2)

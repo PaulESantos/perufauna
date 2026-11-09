@@ -24,7 +24,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">perufauna</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.1.0.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -92,9 +92,9 @@ mamíferos del Perú (<code>perumammals</code> / Pacheco et al.,
 III del Ministerio del Ambiente (<code>citesperu</code> / MINAM).</li>
 <li>
 <strong>Categorización Nacional de Amenaza:</strong> Especies
-amenazadas y protegidas legalmente según el Decreto Supremo N°
-004-2014-MINAGRI y el Libro Rojo de SERFOR
-(<code>perufaunads004</code>).</li>
+incluidas en el Decreto Supremo N° 004-2014-MINAGRI o el Libro Rojo de
+SERFOR (<code>perufaunads004</code>). El Libro Rojo no establece
+protección legal por sí solo.</li>
 </ol>
 <p>Tradicionalmente, realizar esta verificación demandaba consultar cada
 base de datos por separado, cruzar identificadores manualmente y
@@ -120,8 +120,8 @@ centrales, puedes consultar <code><a href="../reference/perufauna_sitrep.html">p
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/perufauna_sitrep.html">perufauna_sitrep</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ── R Environment ───────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; • R: 4.6.1</span></span>
-<span><span class="co">#&gt; • perufauna: 0.1.0.9000</span></span>
+<span><span class="co">#&gt; • R: 4.6.2</span></span>
+<span><span class="co">#&gt; • perufauna: 0.1.0</span></span>
 <span><span class="co">#&gt; ── Core Biodiversity Packages ──────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; • <span style="color: #0000BB;">avesperu        </span> (v0.1.1)</span></span>
 <span><span class="co">#&gt; • <span style="color: #0000BB;">perumammals     </span> (v0.0.0.2)</span></span>
@@ -139,8 +139,8 @@ amenazada.</p>
 <div class="section level3">
 <h3 id="consulta-con-un-vector-de-especies-representativas">Consulta con un vector de especies representativas<a class="anchor" aria-label="anchor" href="#consulta-con-un-vector-de-especies-representativas"></a>
 </h3>
-<p>Evaluemos un conjunto diverso de fauna que incluye aves, mamíferos,
-especies amenazadas, endémicas y un taxón foráneo:</p>
+<p>Evaluemos un conjunto de aves, mamíferos, especies amenazadas,
+endémicas y un taxón ausente de los catálogos de fauna consultados:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">especies</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="st">"Panthera onca"</span>,        <span class="co"># Mamífero, CITES I, D.S. 004: NT</span></span>
@@ -203,8 +203,8 @@ taxonómico.</td>
 <td align="left"><code>in_peru</code></td>
 <td align="left"><code>logical</code></td>
 <td align="left">
-<code>TRUE</code> si la especie cuenta con presencia
-confirmada en el Perú.</td>
+<code>TRUE</code> si figura en UNOP, Pacheco o
+referencias nacionales de fauna; CITES solo no confirma presencia.</td>
 </tr>
 <tr class="odd">
 <td align="left"><code>in_unop</code></td>
@@ -228,16 +228,15 @@ mamíferos de Pacheco et al. (2021).</td>
 <tr class="even">
 <td align="left"><code>ds004_category</code></td>
 <td align="left"><code>character</code></td>
-<td align="left">Categoría legal de amenaza nacional (<code>"CR"</code>,
-<code>"EN"</code>, <code>"VU"</code>, <code>"NT"</code> o
-<code>NA</code>).</td>
+<td align="left">Categoría D.S. 004 o, en su ausencia, del Libro Rojo
+SERFOR.</td>
 </tr>
 <tr class="odd">
 <td align="left"><code>is_threatened</code></td>
 <td align="left"><code>logical</code></td>
 <td align="left">
-<code>TRUE</code> si está legalmente categorizada como
-amenazada.</td>
+<code>TRUE</code> si figura en D.S. 004 o el Libro
+Rojo; este último no establece protección legal por sí solo.</td>
 </tr>
 <tr class="even">
 <td align="left"><code>is_endemic</code></td>
@@ -255,9 +254,11 @@ territorio peruano.</td>
 <h2 id="tolerancia-a-errores-tipográficos-fuzzy-matching">4. Tolerancia a Errores Tipográficos (<em>Fuzzy Matching</em>)<a class="anchor" aria-label="anchor" href="#tolerancia-a-errores-tipogr%C3%A1ficos-fuzzy-matching"></a>
 </h2>
 <p>Los inventarios de campo a menudo contienen erratas de digitación.
-<code><a href="../reference/pf_match.html">pf_match()</a></code> incluye el argumento <code>max_distance</code>
-(por defecto <code>0.1</code>), permitiendo concordancias
-aproximadas:</p>
+<code>max_distance</code> controla la distancia relativa de
+<code>avesperu</code> (por defecto <code>0.1</code>) y
+<code>max_edit_distance</code> el número entero de ediciones en CITES y
+D.S. 004 (por defecto <code>1</code>). El motor de mamíferos usa sus
+propias reglas:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">especies_con_error</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="st">"Pantera onca"</span>,        <span class="co"># Falta 'h'</span></span>
@@ -265,7 +266,7 @@ aproximadas:</p>
 <span>  <span class="st">"Vultur griphus"</span>       <span class="co"># 'i' en vez de 'y'</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/pf_match.html">pf_match</a></span><span class="op">(</span><span class="va">especies_con_error</span>, max_distance <span class="op">=</span> <span class="fl">0.15</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/pf_match.html">pf_match</a></span><span class="op">(</span><span class="va">especies_con_error</span>, max_distance <span class="op">=</span> <span class="fl">0.15</span>, max_edit_distance <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 10</span></span></span>
 <span><span class="co">#&gt;   submitted_name     accepted_name    taxonomic_group in_peru in_unop in_pacheco</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>     </span></span>
@@ -326,9 +327,9 @@ atomizado de 6 columnas:</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 6</span></span></span>
 <span><span class="co">#&gt;   submitted_name  accepted_name taxonomic_group occurrence_status cites_appendix</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Panthera onca   Panthera onca Mammalia        Residente         I             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Panthera onca   Panthera onca Mammalia        Registrado en Pe… I             </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Vultur gryphus  Vultur gryph… Aves            Residente         I             </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Tremarctos orn… Tremarctos o… Mammalia        Residente         I             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Tremarctos orn… Tremarctos o… Mammalia        Registrado en Pe… I             </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Lagothrix flav… Lagothrix fl… Mammalia        Endémico          I             </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Homo sapiens    Homo sapiens  <span style="color: #BB0000;">NA</span>              <span style="color: #BB0000;">NA</span>                <span style="color: #BB0000;">NA</span>            </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: ds004_category &lt;chr&gt;</span></span></span></code></pre></div>
@@ -344,9 +345,10 @@ atomizado de 6 columnas:</p>
 <code>taxonomic_group</code>: Grupo taxonómico
 (<code>"Mammalia"</code>, <code>"Aves"</code>, etc.).</li>
 <li>
-<code>occurrence_status</code>: Estatus de permanencia
-(<code>"Residente"</code>, <code>"Endémico"</code>,
-<code>"Divagante"</code>, <code>"Migratorio"</code>, etc.).</li>
+<code>occurrence_status</code>: Estatus UNOP para aves,
+<code>"Endémico"</code> para mamíferos endémicos,
+<code>"Registrado en Perú"</code> para otras especies documentadas o
+<code>NA</code> si no se establece presencia.</li>
 <li>
 <code>cites_appendix</code>: Apéndice regulatorio CITES
 (<code>"I"</code>, <code>"II"</code>, <code>"III"</code>).</li>
@@ -365,7 +367,7 @@ atomizado de 6 columnas:</p>
 de <code><a href="../reference/pf_match.html">pf_match()</a></code> y <code><a href="../reference/pf_status.html">pf_status()</a></code> se integran
 naturalmente con operaciones de filtrado y resumen:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Filtrar especies amenazadas según la normativa nacional (D.S. 004-2014-MINAGRI)</span></span>
+<code class="sourceCode R"><span><span class="co"># Filtrar especies en D.S. 004 o el Libro Rojo SERFOR</span></span>
 <span><span class="va">amenazadas</span> <span class="op">&lt;-</span> <span class="va">resultado_match</span><span class="op">[</span><span class="va">resultado_match</span><span class="op">$</span><span class="va">is_threatened</span>, <span class="op">]</span></span>
 <span><span class="va">amenazadas</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"accepted_name"</span>, <span class="st">"taxonomic_group"</span>, <span class="st">"ds004_category"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 3</span></span></span>

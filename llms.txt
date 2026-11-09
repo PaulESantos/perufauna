@@ -60,9 +60,9 @@ Carga todo el ecosistema con una única instrucción:
 ``` r
 
 library(perufauna)
-#> ── Attaching core perufauna packages ─────────────────── perufauna 0.1.0.9000 ──
-#> ✔ avesperu       0.1.1.9000     ✔ perufaunads004 0.1.0     
-#> ✔ citesperu      0.1.0          ✔ perumammals    0.1.0.9000
+#> ── Attaching core perufauna packages ──────────────────────── perufauna 0.1.0 ──
+#> ✔ avesperu       0.1.1       ✔ perufaunads004 0.1.0
+#> ✔ citesperu      0.1.0       ✔ perumammals    0.0.0.2
 #> ℹ Use pf_match() for cross-referenced multi-taxa matching.
 ```
 
@@ -96,12 +96,12 @@ diagnostico <- pf_match(especies)
 diagnostico
 #> # A tibble: 5 × 10
 #>   submitted_name       accepted_name  taxonomic_group in_peru in_unop in_pacheco
-#>   <chr>                <chr>          <chr>           <lgl>   <chr>   <lgl>     
-#> 1 Panthera onca        Panthera onca  Mammalia        TRUE    <NA>    TRUE      
-#> 2 Vultur gryphus       Vultur gryphus Aves            TRUE    Reside… FALSE     
-#> 3 Tremarctos ornatus   Tremarctos or… Mammalia        TRUE    <NA>    TRUE      
-#> 4 Lagothrix flavicauda Lagothrix fla… Mammalia        TRUE    <NA>    TRUE      
-#> 5 Homo sapiens         Homo sapiens   <NA>            FALSE   <NA>    FALSE     
+#>   <chr>                <chr>          <chr>           <lgl>   <chr>   <lgl>
+#> 1 Panthera onca        Panthera onca  Mammalia        TRUE    <NA>    TRUE
+#> 2 Vultur gryphus       Vultur gryphus Aves            TRUE    Reside… FALSE
+#> 3 Tremarctos ornatus   Tremarctos or… Mammalia        TRUE    <NA>    TRUE
+#> 4 Lagothrix flavicauda Lagothrix fla… Mammalia        TRUE    <NA>    TRUE
+#> 5 Homo sapiens         Homo sapiens   <NA>            FALSE   <NA>    FALSE
 #> # ℹ 4 more variables: cites_appendix <chr>, ds004_category <chr>,
 #> #   is_threatened <lgl>, is_endemic <lgl>
 ```
@@ -116,18 +116,19 @@ devuelve un `tibble` de 10 variables estructuradas:
     taxonómico correspondiente.
 3.  `taxonomic_group`: Clase o grupo mayor asignado (`"Aves"`,
     `"Mammalia"`, etc.).
-4.  `in_peru`: Booleano (`TRUE`/`FALSE`) que confirma si la especie
-    ocurre en territorio peruano.
+4.  `in_peru`: `TRUE` si figura en UNOP, Pacheco o referencias
+    nacionales de fauna. CITES por sí solo no confirma presencia en
+    Perú.
 5.  `in_unop`: Estatus en el checklist UNOP (`"Residente"`,
     `"Endémico"`, `"Migratorio"`, etc.).
 6.  `in_pacheco`: `TRUE` si la especie está listada en el checklist de
     mamíferos de Pacheco et al. (2021).
 7.  `cites_appendix`: Apéndice regulatorio CITES (`"I"`, `"II"`, `"III"`
     o `NA`).
-8.  `ds004_category`: Categoría nacional de amenaza según D.S.
-    004-2014-MINAGRI (`"CR"`, `"EN"`, `"VU"`, `"NT"` o `NA`).
-9.  `is_threatened`: `TRUE` si la especie está legalmente categorizada
-    como amenazada a nivel nacional.
+8.  `ds004_category`: Categoría D.S. 004 o, si falta, categoría del
+    Libro Rojo SERFOR.
+9.  `is_threatened`: `TRUE` si figura en D.S. 004 o el Libro Rojo. La
+    inclusión solo en el Libro Rojo no establece protección legal.
 10. `is_endemic`: `TRUE` si la especie es endémica de Perú.
 
 ------------------------------------------------------------------------
@@ -144,12 +145,12 @@ genera una tabla condensada de 6 columnas:
 pf_status(especies)
 #> # A tibble: 5 × 6
 #>   submitted_name  accepted_name taxonomic_group occurrence_status cites_appendix
-#>   <chr>           <chr>         <chr>           <chr>             <chr>         
-#> 1 Panthera onca   Panthera onca Mammalia        Residente         I             
-#> 2 Vultur gryphus  Vultur gryph… Aves            Residente         I             
-#> 3 Tremarctos orn… Tremarctos o… Mammalia        Residente         I             
-#> 4 Lagothrix flav… Lagothrix fl… Mammalia        Endémico          I             
-#> 5 Homo sapiens    Homo sapiens  <NA>            <NA>              <NA>          
+#>   <chr>           <chr>         <chr>           <chr>             <chr>
+#> 1 Panthera onca   Panthera onca Mammalia        Registrado en Pe… I
+#> 2 Vultur gryphus  Vultur gryph… Aves            Residente         I
+#> 3 Tremarctos orn… Tremarctos o… Mammalia        Registrado en Pe… I
+#> 4 Lagothrix flav… Lagothrix fl… Mammalia        Endémico          I
+#> 5 Homo sapiens    Homo sapiens  <NA>            <NA>              <NA>
 #> # ℹ 1 more variable: ds004_category <chr>
 ```
 
@@ -162,9 +163,11 @@ expedientes oficiales.
 
 ### 3. Tolerancia a Errores Tipográficos (*Fuzzy Matching*)
 
-Los inventarios de campo con frecuencia presentan variaciones
-ortográficas o errores de digitación. El argumento `max_distance`
-permite realizar concordancias aproximadas:
+Los inventarios de campo con frecuencia presentan errores de digitación.
+`max_distance` controla la distancia relativa en `avesperu` (por defecto
+`0.1`); `max_edit_distance` controla el número entero de ediciones en
+CITES y D.S. 004 (por defecto `1`). El motor de mamíferos usa sus
+propias reglas:
 
 ``` r
 
@@ -174,13 +177,13 @@ especies_con_error <- c(
   "Vultur griphus"       # 'i' en lugar de 'y'
 )
 
-pf_match(especies_con_error, max_distance = 0.15)
+pf_match(especies_con_error, max_distance = 0.15, max_edit_distance = 1)
 #> # A tibble: 3 × 10
 #>   submitted_name     accepted_name    taxonomic_group in_peru in_unop in_pacheco
-#>   <chr>              <chr>            <chr>           <lgl>   <chr>   <lgl>     
-#> 1 Pantera onca       Panthera onca    Mammalia        TRUE    <NA>    TRUE      
-#> 2 Tremarctos ornatus Tremarctos orna… Mammalia        TRUE    <NA>    TRUE      
-#> 3 Vultur griphus     Vultur gryphus   Aves            TRUE    Reside… FALSE     
+#>   <chr>              <chr>            <chr>           <lgl>   <chr>   <lgl>
+#> 1 Pantera onca       Panthera onca    Mammalia        TRUE    <NA>    TRUE
+#> 2 Tremarctos ornatus Tremarctos orna… Mammalia        TRUE    <NA>    TRUE
+#> 3 Vultur griphus     Vultur gryphus   Aves            TRUE    Reside… FALSE
 #> # ℹ 4 more variables: cites_appendix <chr>, ds004_category <chr>,
 #> #   is_threatened <lgl>, is_endemic <lgl>
 ```
@@ -192,10 +195,9 @@ pf_match(especies_con_error, max_distance = 0.15)
 [`pf_match()`](https://paulesantos.github.io/perufauna/reference/pf_match.md)
 y
 [`pf_status()`](https://paulesantos.github.io/perufauna/reference/pf_status.md)
-aceptan directamente tablas de datos, detectando automáticamente la
-columna que contiene los nombres científicos (buscando encabezados
-usuales como `scientific_name`, `species`, `nombre_cientifico`, `name` o
-`taxon`):
+aceptan tablas de datos y detectan encabezados usuales como
+`scientific_name`, `species`, `nombre_cientifico`, `name` o `taxon`.
+Para una columna con otro nombre, utiliza `name_col = "mi_columna"`:
 
 ``` r
 
@@ -216,10 +218,10 @@ resultado <- pf_match(inventario)
 resultado[, c("submitted_name", "taxonomic_group", "cites_appendix", "ds004_category")]
 #> # A tibble: 4 × 4
 #>   submitted_name       taxonomic_group cites_appendix ds004_category
-#>   <chr>                <chr>           <chr>          <chr>         
-#> 1 Panthera onca        Mammalia        I              NT            
-#> 2 Vultur gryphus       Aves            I              EN            
-#> 3 Tremarctos ornatus   Mammalia        I              VU            
+#>   <chr>                <chr>           <chr>          <chr>
+#> 1 Panthera onca        Mammalia        I              NT
+#> 2 Vultur gryphus       Aves            I              EN
+#> 3 Tremarctos ornatus   Mammalia        I              VU
 #> 4 Lagothrix flavicauda Mammalia        I              CR
 ```
 
@@ -236,28 +238,28 @@ natural con flujos de trabajo de análisis y filtrado:
 diagnostico[diagnostico$is_threatened, c("accepted_name", "taxonomic_group", "ds004_category")]
 #> # A tibble: 4 × 3
 #>   accepted_name        taxonomic_group ds004_category
-#>   <chr>                <chr>           <chr>         
-#> 1 Panthera onca        Mammalia        NT            
-#> 2 Vultur gryphus       Aves            EN            
-#> 3 Tremarctos ornatus   Mammalia        VU            
+#>   <chr>                <chr>           <chr>
+#> 1 Panthera onca        Mammalia        NT
+#> 2 Vultur gryphus       Aves            EN
+#> 3 Tremarctos ornatus   Mammalia        VU
 #> 4 Lagothrix flavicauda Mammalia        CR
 
 # Especies en el Apéndice I de CITES (máxima restricción internacional)
-diagnostico[!is.na(diagnostico$cites_appendix) & diagnostico$cites_appendix == "I", 
+diagnostico[!is.na(diagnostico$cites_appendix) & diagnostico$cites_appendix == "I",
             c("accepted_name", "cites_appendix")]
 #> # A tibble: 4 × 2
 #>   accepted_name        cites_appendix
-#>   <chr>                <chr>         
-#> 1 Panthera onca        I             
-#> 2 Vultur gryphus       I             
-#> 3 Tremarctos ornatus   I             
+#>   <chr>                <chr>
+#> 1 Panthera onca        I
+#> 2 Vultur gryphus       I
+#> 3 Tremarctos ornatus   I
 #> 4 Lagothrix flavicauda I
 
 # Especies endémicas del Perú
 diagnostico[diagnostico$is_endemic, c("accepted_name", "taxonomic_group")]
 #> # A tibble: 1 × 2
 #>   accepted_name        taxonomic_group
-#>   <chr>                <chr>          
+#>   <chr>                <chr>
 #> 1 Lagothrix flavicauda Mammalia
 ```
 
@@ -274,10 +276,10 @@ ecosistema y monitorear versiones y posibles conflictos:
 perufauna_sitrep()
 #> ── R Environment ───────────────────────────────────────────────────────────────
 #> • R: 4.6.1
-#> • perufauna: 0.1.0.9000
+#> • perufauna: 0.1.0
 #> ── Core Biodiversity Packages ──────────────────────────────────────────────────
-#> • avesperu         (v0.1.1.9000)
-#> • perumammals      (v0.1.0.9000)
+#> • avesperu         (v0.1.1)
+#> • perumammals      (v0.0.0.2)
 #> • citesperu        (v0.1.0)
 #> • perufaunads004   (v0.1.0)
 
@@ -285,10 +287,10 @@ perufauna_sitrep()
 perufauna_deps()
 #> # A tibble: 4 × 3
 #>   package        installed local_version
-#>   <chr>          <lgl>     <chr>        
-#> 1 avesperu       TRUE      0.1.1.9000   
-#> 2 perumammals    TRUE      0.1.0.9000   
-#> 3 citesperu      TRUE      0.1.0        
+#>   <chr>          <lgl>     <chr>
+#> 1 avesperu       TRUE      0.1.1
+#> 2 perumammals    TRUE      0.0.0.2
+#> 3 citesperu      TRUE      0.1.0
 #> 4 perufaunads004 TRUE      0.1.0
 
 # Verificación de conflictos entre espacios de nombres cargados
@@ -306,7 +308,7 @@ correspondientes:
 
 ``` text
 Santos Andrade, P. E. (2026). perufauna: Easily Load and Harmonize Peruvian Fauna
-and Biodiversity Packages. R package version 0.1.0.9000.
+and Biodiversity Packages. R package version 0.1.0.
 https://paulesantos.github.io/perufauna/
 ```
 
@@ -335,8 +337,6 @@ https://paulesantos.github.io/perufauna/
   pf_status()](https://paulesantos.github.io/perufauna/articles/uso-pf-match-pf-status.html)
 - **Código Fuente y Reporte de Problemas:** [GitHub
   Repository](https://github.com/PaulESantos/perufauna)
-- **Estándares del Ecosistema:**
-  [ECOSYSTEM_STANDARDS.md](https://paulesantos.github.io/perufauna/ECOSYSTEM_STANDARDS.md)
 
 ------------------------------------------------------------------------
 
