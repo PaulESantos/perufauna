@@ -1,0 +1,28 @@
+citHeader("To cite perufauna in publications, please use:")
+
+package_version <- if (!is.null(meta$Version)) meta$Version else "0.1.0"
+
+bibentry(
+  bibtype = "Manual",
+  key = "perufauna",
+  title = "perufauna: Easily Load and Harmonize Peruvian Fauna and Biodiversity Packages",
+  author = person(
+    "Paul E.", "Santos Andrade",
+    email = "paulefrens@gmail.com",
+    comment = c(ORCID = "0000-0002-6635-0375")
+  ),
+  year = "2026",
+  note = paste("R package version", package_version),
+  url = "https://paulesantos.github.io/perufauna/",
+  textVersion = paste(
+    "Santos Andrade, P. E. (2026).",
+    "perufauna: Easily Load and Harmonize Peruvian Fauna and Biodiversity Packages.",
+    paste0("R package version ", package_version, "."),
+    "https://paulesantos.github.io/perufauna/"
+  ),
+  footer = paste(
+    "When using data from a member package, also cite its own package and",
+    "primary sources; see citation(\"avesperu\"), citation(\"perumammals\"),",
+    "citation(\"citesperu\"), and citation(\"perufaunads004\")."
+  )
+)
