@@ -16,35 +16,50 @@ knitr::opts_chunk$set(
 # perufauna
 
 <!-- badges: start -->
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-green.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![R-CMD-check](https://github.com/PaulESantos/perufauna/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/PaulESantos/perufauna/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/PaulESantos/perufauna/graph/badge.svg)](https://app.codecov.io/gh/PaulESantos/perufauna)
+[![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/perufauna?color=green)](https://CRAN.R-project.org/package=perufauna)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
 
-**perufauna** es un metapaquete de R (inspirado en la arquitectura y principios de diseño de *tidyverse*) que orquesta, armoniza y valida de forma unificada la información sobre biodiversidad y fauna silvestre del Perú.
+**perufauna** es un metapaquete de R que reúne herramientas para consultar y cruzar información sobre la fauna del Perú. Permite trabajar con nombres científicos, listas de aves y mamíferos, apéndices CITES y categorías nacionales de amenaza desde una misma interfaz.
 
-Integra en un solo punto de acceso los catálogos taxonómicos oficiales y los marcos regulatorios nacionales e internacionales, resolviendo la dispersión de fuentes para consultores ambientales (Líneas Base, EIA, DIA, PMA), investigadores, peritos forenses de fauna y gestores de conservación.
+El paquete conserva el acceso a las funciones de sus cuatro dependencias y ofrece dos funciones de consulta integrada: `pf_match()` para obtener resultados detallados y `pf_status()` para generar un resumen de seis columnas.
+
+### Aplicación interactiva
+
+Con **perufauna** instalado, añade las dependencias opcionales y abre la app:
+
+```r
+install.packages(c("shiny", "DT", "callr", "later"))
+# Opcional: lectura y descarga de archivos de Excel
+install.packages(c("readxl", "writexl"))
+perufauna::run_perufauna_app()
+```
+
+La app ofrece una consulta integrada y cuatro vistas especializadas: aves, mamíferos, CITES y amenaza nacional. Puedes pegar nombres o subir un archivo TXT, CSV, TSV, XLS o XLSX; seleccionar la columna de nombres; revisar los resultados y descargarlos. Los archivos de Excel requieren `readxl` para importar y `writexl` para exportar. Cada consulta admite hasta 10 000 nombres y se ejecuta en un proceso separado que puedes cancelar.
 
 ---
 
-## Ecosistema de Paquetes
+## Paquetes integrados
 
-Al cargar **perufauna**, se adjuntan y coordinan automáticamente cuatro paquetes especializados del ecosistema:
+Al ejecutar `library(perufauna)`, se adjuntan estos cuatro paquetes:
 
-| Paquete | Prefijo | Ámbito Biológico / Temático | Fuente Oficial de Referencia | Registros / Alcance |
-|:---|:---:|:---|:---|:---|
-| **[avesperu](https://github.com/PaulESantos/avesperu)** | `ap_` | Aves del Perú | Lista Patrón de la Unión de Ornitólogos del Perú (UNOP / SACC) | ~1,925 especies |
-| **[perumammals](https://github.com/PaulESantos/perumammals)** | `pm_` | Mamíferos del Perú | Checklist Taxonómico de Pacheco et al. (2021) | 573 especies |
-| **[citesperu](https://github.com/PaulESantos/citesperu)** | `cites_` | Comercio Internacional CITES | Listado Oficial CITES Perú (MINAM, Apéndices I, II y III) | Fauna y flora CITES |
-| **[perufaunads004](https://github.com/PaulESantos/perufaunads004)** | `ds004_` | Fauna Amenazada Nacional | D.S. N° 004-2014-MINAGRI y Libro Rojo de SERFOR | CR, EN, VU y NT |
+| Paquete | Prefijo | Información | Referencia |
+|:---|:---:|:---|:---|
+| **[avesperu](https://github.com/PaulESantos/avesperu)** | `ap_` | Aves del Perú | Lista de la Unión de Ornitólogos del Perú (UNOP) |
+| **[perumammals](https://github.com/PaulESantos/perumammals)** | `pm_` | Mamíferos del Perú | Pacheco et al. (2021) |
+| **[citesperu](https://github.com/PaulESantos/citesperu)** | `cites_` | Apéndices CITES | Listado CITES del MINAM |
+| **[perufaunads004](https://github.com/PaulESantos/perufaunads004)** | `ds004_` | Categorías nacionales de amenaza | D.S. 004-2014-MINAGRI y Libro Rojo de SERFOR |
 
-> **Convención de nombres y retrocompatibilidad:** Cada paquete miembro implementa su propio prefijo canónico (`ap_`, `pm_`, `cites_`, `ds004_`) para prevenir colisiones en el espacio de nombres, manteniendo al mismo tiempo retrocompatibilidad total con sus nombres de funciones originales.
+Las funciones de cada paquete se pueden llamar con su espacio de nombres, por ejemplo, `avesperu::search_avesperu()`. Los prefijos de la tabla ayudan a reconocer sus funciones; `perufauna_conflicts()` permite revisar posibles conflictos entre paquetes adjuntos.
 
 ---
 
 ## Instalación
 
-Puedes instalar la versión de desarrollo de **perufauna** (y sus dependencias) directamente desde GitHub:
+Instala **perufauna** y sus dependencias desde GitHub con una de estas opciones:
 
 ```r
 # Instalar usando pak (recomendado)
@@ -58,25 +73,25 @@ remotes::install_github("PaulESantos/perufauna")
 
 ---
 
-## Inicio Rápido
+## Inicio rápido
 
-### Carga del Metapaquete
+### Cargar los paquetes
 
-Carga todo el ecosistema con una única instrucción:
+Carga los cuatro paquetes integrados con una instrucción:
 
 ```{r}
 library(perufauna)
 ```
 
-Al cargarse, `perufauna` reporta las versiones de los paquetes miembros adjuntos y provee orientación inmediata sobre las funciones de consulta integradas.
+El mensaje de inicio muestra los paquetes adjuntados y sus versiones. Su contenido depende de las versiones instaladas y de los paquetes ya cargados en la sesión.
 
 ---
 
-## Flujos de Trabajo Principales
+## Consultas principales
 
-### 1. Reconciliación Taxonómica y Regulatoria Cruzada (`pf_match`)
+### 1. Cruzar nombres y categorías con `pf_match()`
 
-La función `pf_match()` cruza una lista de nombres científicos simultáneamente contra los cuatro repertorios de datos, resolviendo nombres aceptados, estatus biológico y categorías de protección legal en una sola llamada:
+`pf_match()` consulta las cuatro fuentes para cada nombre científico y devuelve una fila por entrada. El resultado reúne el nombre encontrado, el grupo taxonómico, la presencia en las listas consultadas y las categorías CITES y nacionales disponibles:
 
 ```{r}
 especies <- c(
@@ -91,38 +106,38 @@ diagnostico <- pf_match(especies)
 diagnostico
 ```
 
-#### Variables Generadas por `pf_match()`:
+#### Columnas de `pf_match()`
 
-`pf_match()` devuelve un `tibble` de 10 variables estructuradas:
+`pf_match()` devuelve un `tibble` con diez columnas:
 
 1. `submitted_name`: Nombre original ingresado por el usuario.
-2. `accepted_name`: Nombre binomial aceptado según el estándar taxonómico correspondiente.
+2. `accepted_name`: Nombre devuelto por las fuentes consultadas. Si no hay coincidencia, conserva el nombre ingresado.
 3. `taxonomic_group`: Clase o grupo mayor asignado (`"Aves"`, `"Mammalia"`, etc.).
-4. `in_peru`: `TRUE` si figura en UNOP, Pacheco o referencias nacionales de fauna. CITES por sí solo no confirma presencia en Perú.
+4. `in_peru`: `TRUE` si el nombre figura en las listas de aves o mamíferos, o en las referencias nacionales de amenaza. Una coincidencia solo en CITES no activa esta columna.
 5. `in_unop`: Estatus en el checklist UNOP (`"Residente"`, `"Endémico"`, `"Migratorio"`, etc.).
 6. `in_pacheco`: `TRUE` si la especie está listada en el checklist de mamíferos de Pacheco et al. (2021).
 7. `cites_appendix`: Apéndice regulatorio CITES (`"I"`, `"II"`, `"III"` o `NA`).
 8. `ds004_category`: Categoría D.S. 004 o, si falta, categoría del Libro Rojo SERFOR.
-9. `is_threatened`: `TRUE` si figura en D.S. 004 o el Libro Rojo. La inclusión solo en el Libro Rojo no establece protección legal.
-10. `is_endemic`: `TRUE` si la especie es endémica de Perú.
+9. `is_threatened`: `TRUE` si figura en el D.S. 004 o en el Libro Rojo. Esta columna agrupa ambas fuentes y no distingue por sí sola la protección legal.
+10. `is_endemic`: `TRUE` si las listas de aves o mamíferos indican endemismo en el Perú.
 
 ---
 
-### 2. Resumen Ejecutivo para Informes y Evaluaciones (`pf_status`)
+### 2. Obtener un resumen con `pf_status()`
 
-Para elaborar cuadros técnicos, matrices de impacto ambiental o anexos de Línea Base biológica, `pf_status()` genera una tabla condensada de 6 columnas:
+`pf_status()` utiliza `pf_match()` y devuelve seis columnas con los datos principales de cada nombre:
 
 ```{r}
 pf_status(especies)
 ```
 
-Las columnas generadas (`submitted_name`, `accepted_name`, `taxonomic_group`, `occurrence_status`, `cites_appendix`, `ds004_category`) brindan el formato directo solicitado habitualmente en expedientes oficiales.
+El resultado incluye `submitted_name`, `accepted_name`, `taxonomic_group`, `occurrence_status`, `cites_appendix` y `ds004_category`. Para mamíferos registrados, `occurrence_status` indica `"Endémico"` cuando corresponde y `"Registrado en Perú"` en los demás casos; para aves usa el estado devuelto por la lista de referencia.
 
 ---
 
-### 3. Tolerancia a Errores Tipográficos (*Fuzzy Matching*)
+### 3. Ajustar la coincidencia aproximada
 
-Los inventarios de campo con frecuencia presentan errores de digitación. `max_distance` controla la distancia relativa en `avesperu` (por defecto `0.1`); `max_edit_distance` controla el número entero de ediciones en CITES y D.S. 004 (por defecto `1`). El motor de mamíferos usa sus propias reglas:
+`max_distance` controla la distancia permitida por `avesperu`: los valores menores que 1 son relativos a la longitud del nombre (valor predeterminado: `0.1`). `max_edit_distance` fija el número máximo de ediciones para CITES y D.S. 004 (valor predeterminado: `1`). La búsqueda de mamíferos utiliza las reglas de `perumammals`:
 
 ```{r}
 especies_con_error <- c(
@@ -136,9 +151,9 @@ pf_match(especies_con_error, max_distance = 0.15, max_edit_distance = 1)
 
 ---
 
-### 4. Entrada Directa desde un `data.frame` o `tibble`
+### 4. Consultar una tabla de datos
 
-`pf_match()` y `pf_status()` aceptan tablas de datos y detectan encabezados usuales como `scientific_name`, `species`, `nombre_cientifico`, `name` o `taxon`. Para una columna con otro nombre, utiliza `name_col = "mi_columna"`:
+`pf_match()` y `pf_status()` aceptan un `data.frame` o `tibble`. Reconocen columnas como `scientific_name`, `species`, `species_name`, `nombre_cientifico`, `name` y `taxon`, sin distinguir mayúsculas de minúsculas. Si el nombre de la columna es otro, indícalo con `name_col`. La salida contiene las columnas de consulta, no las demás columnas de la tabla de entrada:
 
 ```{r}
 inventario <- data.frame(
@@ -160,16 +175,16 @@ resultado[, c("submitted_name", "taxonomic_group", "cites_appendix", "ds004_cate
 
 ---
 
-### 5. Filtrado Rápido de Prioridades de Conservación
+### 5. Filtrar resultados
 
-Al retornar tibbles estándar, los resultados se integran de forma natural con flujos de trabajo de análisis y filtrado:
+Como el resultado es un `tibble`, puedes filtrar las coincidencias por categoría, apéndice o endemismo:
 
 ```{r}
-# Especies amenazadas a nivel nacional (D.S. 004-2014-MINAGRI / Libro Rojo)
+# Especies incluidas en el D.S. 004 o en el Libro Rojo
 diagnostico[diagnostico$is_threatened, c("accepted_name", "taxonomic_group", "ds004_category")]
 
-# Especies en el Apéndice I de CITES (máxima restricción internacional)
-diagnostico[!is.na(diagnostico$cites_appendix) & diagnostico$cites_appendix == "I", 
+# Especies incluidas en el Apéndice I de CITES
+diagnostico[!is.na(diagnostico$cites_appendix) & diagnostico$cites_appendix == "I",
             c("accepted_name", "cites_appendix")]
 
 # Especies endémicas del Perú
@@ -178,26 +193,36 @@ diagnostico[diagnostico$is_endemic, c("accepted_name", "taxonomic_group")]
 
 ---
 
-### 6. Diagnóstico y Monitoreo del Entorno
+### 6. Revisar paquetes y conflictos
 
-`perufauna` incluye herramientas para diagnosticar el estado del ecosistema y monitorear versiones y posibles conflictos:
+Estas funciones muestran los paquetes integrados, sus versiones instaladas y los posibles conflictos de nombres en la sesión:
 
 ```{r}
-# Reporte de situación de dependencias y versiones
+# Resumen de la sesión y versiones instaladas
 perufauna_sitrep()
 
-# Listado estructurado de versiones locales instaladas
+# Tabla de paquetes, instalación y versiones
 perufauna_deps()
 
-# Verificación de conflictos entre espacios de nombres cargados
+# Conflictos entre funciones de paquetes adjuntos
 perufauna_conflicts()
 ```
 
 ---
 
+## Cómo funciona la consulta integrada
+
+`pf_match()` envía cada nombre a los buscadores de `avesperu`, `perumammals`, `citesperu` y `perufaunads004`. Después combina los resultados por posición, conservando una fila por nombre de entrada. Las coincidencias de aves y mamíferos determinan primero el grupo taxonómico; CITES y D.S. 004 pueden completarlo cuando falta. El nombre aceptado se actualiza con las coincidencias: la de mamíferos prevalece sobre la de aves si ambas listas coinciden, y CITES o D.S. 004 pueden completarlo cuando aún coincide con el nombre ingresado.
+
+Las columnas CITES y D.S. 004 proceden de sus respectivas fuentes. `ds004_category` usa la categoría del D.S. 004 y, si no existe, la del Libro Rojo. Conviene revisar la fuente original antes de interpretar una categoría como protección legal. `pf_status()` selecciona seis columnas de esta consulta y calcula `occurrence_status`; no realiza una búsqueda independiente.
+
+Si una búsqueda falla, `pf_match()` informa qué paquete produjo el error. Los parámetros de distancia se aplican a los buscadores indicados arriba y no modifican las reglas de coincidencia de `perumammals`.
+
+---
+
 ## Citación
 
-Si utilizas **perufauna** o cualquiera de sus paquetes miembros en publicaciones científicas, consultorías o reportes técnicos, por favor cita el metapaquete y las fuentes taxonómicas y normativas correspondientes:
+Para citar **perufauna**, consulta también `citation("perufauna")`. Si utilizas datos de un paquete integrado, cita ese paquete y sus fuentes primarias:
 
 ```text
 Santos Andrade, P. E. (2026). perufauna: Easily Load and Harmonize Peruvian Fauna
@@ -205,7 +230,7 @@ and Biodiversity Packages. R package version 0.1.0.
 https://paulesantos.github.io/perufauna/
 ```
 
-### Fuentes Primarias Integradas:
+### Fuentes de los paquetes integrados
 
 * **Aves del Perú:** Plenge, M. A., & Angulo, F. (2026). *Lista de las aves del Perú / List of the birds of Peru*. Unión de Ornitólogos del Perú (UNOP).
 * **Mamíferos del Perú:** Pacheco, V., Graham-Angles, R., Aguilar, L., et al. (2021). *Diversidad y endemismo de los mamíferos del Perú*. Revista Peruana de Biología, 28(especial).
@@ -214,11 +239,11 @@ https://paulesantos.github.io/perufauna/
 
 ---
 
-## Documentación y Enlaces
+## Documentación y enlaces
 
-* **Sitio Web de Documentación:** [https://paulesantos.github.io/perufauna/](https://paulesantos.github.io/perufauna/)
-* **Vignette Detallada:** [Uso Integrado de pf_match() y pf_status()](https://paulesantos.github.io/perufauna/articles/uso-pf-match-pf-status.html)
-* **Código Fuente y Reporte de Problemas:** [GitHub Repository](https://github.com/PaulESantos/perufauna)
+* **Documentación:** [sitio del paquete](https://paulesantos.github.io/perufauna/)
+* **Guía de uso:** [consultas con `pf_match()` y `pf_status()`](https://paulesantos.github.io/perufauna/articles/uso-pf-match-pf-status.html)
+* **Código y reporte de problemas:** [repositorio en GitHub](https://github.com/PaulESantos/perufauna)
 
 ---
 

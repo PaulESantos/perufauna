@@ -1,3 +1,8 @@
+## perufauna (development version)
+
+* Added `run_perufauna_app()` with five interactive views, shared file and text
+  input, background queries, result review, and CSV/XLSX downloads.
+
 ## perufauna 0.1.0
 
 * First CRAN release. Matching now separates the relative bird distance from

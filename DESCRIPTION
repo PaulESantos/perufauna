@@ -21,8 +21,16 @@ Imports:
     rlang,
     tibble
 Suggests: 
+    callr,
+    DT,
+    htmltools,
     knitr,
+    later,
+    pkgload,
+    readxl,
     rmarkdown,
+    shiny,
+    writexl,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/roxygen2/version: 8.1.1
