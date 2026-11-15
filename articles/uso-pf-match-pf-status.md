@@ -26,11 +26,10 @@ conciliar nomenclaturas discrepantes.
 El metapaquete **`perufauna`** unifica este ecosistema, y provee dos
 funciones principales de consulta cruzada: \*
 **[`pf_match()`](https://paulesantos.github.io/perufauna/reference/pf_match.md)**:
-Reconciliación profunda y multidimensional con 10 variables
-estructuradas por taxón. \*
+Consulta integrada con 12 variables, incluidas las señales de revisión
+manual. \*
 **[`pf_status()`](https://paulesantos.github.io/perufauna/reference/pf_status.md)**:
-Resumen ejecutivo y formateado de 6 columnas, ideal para reportes
-técnicos, tablas de evaluación y anexos de impacto ambiental.
+Resumen de 8 columnas para reportes técnicos y tablas de evaluación.
 
 ------------------------------------------------------------------------
 
@@ -87,7 +86,7 @@ especies <- c(
 
 resultado_match <- pf_match(especies)
 resultado_match
-#> # A tibble: 5 × 10
+#> # A tibble: 5 × 12
 #>   submitted_name       accepted_name  taxonomic_group in_peru in_unop in_pacheco
 #>   <chr>                <chr>          <chr>           <lgl>   <chr>   <lgl>     
 #> 1 Panthera onca        Panthera onca  Mammalia        TRUE    NA      TRUE      
@@ -95,28 +94,31 @@ resultado_match
 #> 3 Tremarctos ornatus   Tremarctos or… Mammalia        TRUE    NA      TRUE      
 #> 4 Lagothrix flavicauda Lagothrix fla… Mammalia        TRUE    NA      TRUE      
 #> 5 Homo sapiens         Homo sapiens   NA              FALSE   NA      FALSE     
-#> # ℹ 4 more variables: cites_appendix <chr>, ds004_category <chr>,
-#> #   is_threatened <lgl>, is_endemic <lgl>
+#> # ℹ 6 more variables: cites_appendix <chr>, ds004_category <chr>,
+#> #   is_threatened <lgl>, is_endemic <lgl>, review_flag <lgl>,
+#> #   review_observation <chr>
 ```
 
 ### Estructura de las variables devueltas por `pf_match()`
 
 La salida de
 [`pf_match()`](https://paulesantos.github.io/perufauna/reference/pf_match.md)
-es un `tibble` consistente de 10 columnas:
+es un `tibble` de 12 columnas:
 
 | Columna | Tipo | Descripción |
 |:---|:---|:---|
 | `submitted_name` | `character` | Nombre científico tal como fue ingresado por el usuario. |
-| `accepted_name` | `character` | Nombre binomial validado y aceptado según el estándar taxonómico. |
+| `accepted_name` | `character` | Nombre encontrado o sugerido; una corrección aproximada requiere revisión manual. |
 | `taxonomic_group` | `character` | Clase o grupo biológico mayor (`"Aves"`, `"Mammalia"`, etc.). |
 | `in_peru` | `logical` | `TRUE` si figura en UNOP, Pacheco o referencias nacionales de fauna; CITES solo no confirma presencia. |
 | `in_unop` | `character` | Estatus en el checklist UNOP (`"Residente"`, `"Endémico"`, `"Migratorio"`, etc.). |
 | `in_pacheco` | `logical` | `TRUE` si figura en el checklist de mamíferos de Pacheco et al. (2021). |
-| `cites_appendix` | `character` | Apéndice CITES asignado (`"I"`, `"II"`, `"III"` o `NA`). |
+| `cites_appendix` | `character` | Apéndice CITES encontrado o sugerido (`"I"`, `"II"`, `"III"` o `NA`); revisar la observación antes de interpretarlo como confirmado. |
 | `ds004_category` | `character` | Categoría D.S. 004 o, en su ausencia, del Libro Rojo SERFOR. |
 | `is_threatened` | `logical` | `TRUE` si figura en D.S. 004 o el Libro Rojo; este último no establece protección legal por sí solo. |
 | `is_endemic` | `logical` | `TRUE` si la especie es endémica del territorio peruano. |
+| `review_flag` | `logical` | `TRUE` si alguna coincidencia necesita revisión manual. |
+| `review_observation` | `character` | «Necesidad de revisión manual» para las filas señaladas; `NA` en los demás casos. |
 
 ------------------------------------------------------------------------
 
@@ -124,9 +126,10 @@ es un `tibble` consistente de 10 columnas:
 
 Los inventarios de campo a menudo contienen erratas de digitación.
 `max_distance` controla la distancia relativa de `avesperu` (por defecto
-`0.1`) y `max_edit_distance` el número entero de ediciones en CITES y
-D.S. 004 (por defecto `1`). El motor de mamíferos usa sus propias
-reglas:
+`0.15`) y `max_edit_distance` el número entero de ediciones en CITES y
+D.S. 004 (por defecto `2`). El motor de mamíferos usa sus propias
+reglas. Aumentar estos límites genera más candidatos, que se señalan
+para revisión manual:
 
 ``` r
 
@@ -136,15 +139,32 @@ especies_con_error <- c(
   "Vultur griphus"       # 'i' en vez de 'y'
 )
 
-pf_match(especies_con_error, max_distance = 0.15, max_edit_distance = 1)
-#> # A tibble: 3 × 10
+pf_match(especies_con_error, max_distance = 0.15, max_edit_distance = 2)
+#> # A tibble: 3 × 12
 #>   submitted_name     accepted_name    taxonomic_group in_peru in_unop in_pacheco
 #>   <chr>              <chr>            <chr>           <lgl>   <chr>   <lgl>     
 #> 1 Pantera onca       Panthera onca    Mammalia        TRUE    NA      TRUE      
 #> 2 Tremarctos ornatus Tremarctos orna… Mammalia        TRUE    NA      TRUE      
 #> 3 Vultur griphus     Vultur gryphus   Aves            TRUE    Reside… FALSE     
-#> # ℹ 4 more variables: cites_appendix <chr>, ds004_category <chr>,
-#> #   is_threatened <lgl>, is_endemic <lgl>
+#> # ℹ 6 more variables: cites_appendix <chr>, ds004_category <chr>,
+#> #   is_threatened <lgl>, is_endemic <lgl>, review_flag <lgl>,
+#> #   review_observation <chr>
+```
+
+En particular, un apéndice CITES puede ser una propuesta cuando el
+nombre de entrada necesita corrección. Conserva la observación junto al
+resultado:
+
+``` r
+
+pf_status(c("Vultur gryphus", "Vultor gryphos"))[
+  , c("submitted_name", "accepted_name", "cites_appendix", "review_observation")
+]
+#> # A tibble: 2 × 4
+#>   submitted_name accepted_name  cites_appendix review_observation          
+#>   <chr>          <chr>          <chr>          <chr>                       
+#> 1 Vultur gryphus Vultur gryphus I              NA                          
+#> 2 Vultor gryphos Vultur gryphus I              Necesidad de revisión manual
 ```
 
 ------------------------------------------------------------------------
@@ -195,13 +215,13 @@ CITES y Decreto Supremo.
 
 La función
 [`pf_status()`](https://paulesantos.github.io/perufauna/reference/pf_status.md)
-simplifica esto a un formato atomizado de 6 columnas:
+simplifica esto a un formato de 8 columnas:
 
 ``` r
 
 status_resumen <- pf_status(especies)
 status_resumen
-#> # A tibble: 5 × 6
+#> # A tibble: 5 × 8
 #>   submitted_name  accepted_name taxonomic_group occurrence_status cites_appendix
 #>   <chr>           <chr>         <chr>           <chr>             <chr>         
 #> 1 Panthera onca   Panthera onca Mammalia        Registrado en Pe… I             
@@ -209,7 +229,8 @@ status_resumen
 #> 3 Tremarctos orn… Tremarctos o… Mammalia        Registrado en Pe… I             
 #> 4 Lagothrix flav… Lagothrix fl… Mammalia        Endémico          I             
 #> 5 Homo sapiens    Homo sapiens  NA              NA                NA            
-#> # ℹ 1 more variable: ds004_category <chr>
+#> # ℹ 3 more variables: ds004_category <chr>, review_observation <chr>,
+#> #   review_flag <lgl>
 ```
 
 ### Columnas generadas por `pf_status()`:
@@ -224,6 +245,8 @@ status_resumen
     `"III"`).
 6.  `ds004_category`: Categoría nacional de amenaza (`"CR"`, `"EN"`,
     `"VU"`, `"NT"`).
+7.  `review_observation`: Señala cuándo se necesita revisión manual.
+8.  `review_flag`: Permite filtrar esas filas con un valor lógico.
 
 ------------------------------------------------------------------------
 
@@ -237,8 +260,8 @@ se integran naturalmente con operaciones de filtrado y resumen:
 
 ``` r
 
-# Filtrar especies en D.S. 004 o el Libro Rojo SERFOR
-amenazadas <- resultado_match[resultado_match$is_threatened, ]
+# Filtrar coincidencias en D.S. 004 o Libro Rojo sin revisión pendiente
+amenazadas <- resultado_match[resultado_match$is_threatened & !resultado_match$review_flag, ]
 amenazadas[, c("accepted_name", "taxonomic_group", "ds004_category")]
 #> # A tibble: 4 × 3
 #>   accepted_name        taxonomic_group ds004_category
@@ -248,8 +271,8 @@ amenazadas[, c("accepted_name", "taxonomic_group", "ds004_category")]
 #> 3 Tremarctos ornatus   Mammalia        VU            
 #> 4 Lagothrix flavicauda Mammalia        CR
 
-# Filtrar especies incluidas en el Apéndice I de CITES (máxima restricción comercial)
-cites_i <- resultado_match[!is.na(resultado_match$cites_appendix) & resultado_match$cites_appendix == "I", ]
+# Filtrar coincidencias del Apéndice I de CITES que no requieren revisión manual
+cites_i <- resultado_match[!is.na(resultado_match$cites_appendix) & resultado_match$cites_appendix == "I" & !resultado_match$review_flag, ]
 cites_i[, c("accepted_name", "cites_appendix")]
 #> # A tibble: 4 × 2
 #>   accepted_name        cites_appendix
@@ -274,9 +297,10 @@ endemicas[, c("accepted_name", "taxonomic_group", "is_endemic")]
 
 - Utiliza
   **[`pf_match()`](https://paulesantos.github.io/perufauna/reference/pf_match.md)**
-  cuando necesites trazabilidad completa por base de datos (UNOP,
-  Pacheco, CITES, D.S. 004) o requieras evaluar banderas booleanas
-  (`in_peru`, `is_threatened`, `is_endemic`).
+  cuando necesites consultar conjuntamente las cuatro fuentes o evaluar
+  banderas booleanas (`in_peru`, `is_threatened`, `is_endemic`).
+  Conserva `review_observation` en los informes y verifica las filas
+  señaladas antes de interpretar una categoría normativa.
 - Utiliza
   **[`pf_status()`](https://paulesantos.github.io/perufauna/reference/pf_status.md)**
   para elaborar matrices ejecutivas, cuadros de anexos en informes

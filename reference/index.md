@@ -11,6 +11,16 @@ across taxonomic backbones and regulatory lists.
 - [`pf_status()`](https://paulesantos.github.io/perufauna/reference/pf_status.md)
   : Quick Status Summary for Peruvian Fauna
 
+## Interactive Application
+
+Interactive Shiny interface for biodiversity cross-referencing and data
+reconciliation.
+
+- [`run_perufauna_app()`](https://paulesantos.github.io/perufauna/reference/run_perufauna_app.md)
+  [`pf_app()`](https://paulesantos.github.io/perufauna/reference/run_perufauna_app.md)
+  [`perufauna_app()`](https://paulesantos.github.io/perufauna/reference/run_perufauna_app.md)
+  : Abrir la aplicación interactiva de perufauna
+
 ## Metapackage Orchestration & Diagnostics
 
 Tools to inspect package versions, manage attached packages, and

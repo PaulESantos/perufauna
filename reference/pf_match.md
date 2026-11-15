@@ -15,7 +15,7 @@ specialized Peruvian biodiversity databases:
 ## Usage
 
 ``` r
-pf_match(splist, max_distance = 0.1, max_edit_distance = 1L, name_col = NULL)
+pf_match(splist, max_distance = 0.15, max_edit_distance = 2L, name_col = NULL)
 ```
 
 ## Arguments
@@ -28,12 +28,12 @@ pf_match(splist, max_distance = 0.1, max_edit_distance = 1L, name_col = NULL)
 - max_distance:
 
   Non-negative numeric distance used by `avesperu`. Values below 1 are
-  relative to the name length (default: 0.1).
+  relative to the name length (default: 0.15).
 
 - max_edit_distance:
 
   Non-negative whole number of edits allowed by `citesperu` and
-  `perufaunads004` (default: 1). The mammal matcher uses its own
+  `perufaunads004` (default: 2). The mammal matcher uses its own
   matching rules.
 
 - name_col:
@@ -48,7 +48,8 @@ with harmonized cross-database columns:
 
 - `submitted_name`: The raw input name.
 
-- `accepted_name`: Validated/accepted scientific binomial name.
+- `accepted_name`: Name returned by the matching sources; an approximate
+  correction is a candidate until manually reviewed.
 
 - `taxonomic_group`: Taxonomic class/group ("Aves", "Mammalia",
   "Reptilia", "Amphibia", etc.).
@@ -61,7 +62,8 @@ with harmonized cross-database columns:
 
 - `in_pacheco`: Logical. Listed in Pacheco et al. (2021) Peru Mammals.
 
-- `cites_appendix`: CITES status ("I", "II", "III", or NA).
+- `cites_appendix`: CITES appendix ("I", "II", "III", or NA), including
+  approximate candidates explicitly marked for manual review.
 
 - `ds004_category`: Category from D.S. 004, or from the SERFOR Red Book
   when the species is absent from D.S. 004.
@@ -71,20 +73,26 @@ with harmonized cross-database columns:
 
 - `is_endemic`: Logical. Endemic to Peru (based on UNOP or Pacheco).
 
+- `review_flag`: Logical. An approximate match or source candidate
+  requires manual taxonomic review before use as a confirmed
+  identification.
+
+- `review_observation`: "Necesidad de revisión manual" for approximate
+  matches; otherwise NA.
+
 ## Examples
 
 ``` r
-# \donttest{
 species <- c("Panthera onca", "Vultur gryphus", "Tremarctos ornatus", "Homo sapiens")
 pf_match(species)
-#> # A tibble: 4 × 10
+#> # A tibble: 4 × 12
 #>   submitted_name     accepted_name    taxonomic_group in_peru in_unop in_pacheco
 #>   <chr>              <chr>            <chr>           <lgl>   <chr>   <lgl>     
 #> 1 Panthera onca      Panthera onca    Mammalia        TRUE    NA      TRUE      
 #> 2 Vultur gryphus     Vultur gryphus   Aves            TRUE    Reside… FALSE     
 #> 3 Tremarctos ornatus Tremarctos orna… Mammalia        TRUE    NA      TRUE      
 #> 4 Homo sapiens       Homo sapiens     NA              FALSE   NA      FALSE     
-#> # ℹ 4 more variables: cites_appendix <chr>, ds004_category <chr>,
-#> #   is_threatened <lgl>, is_endemic <lgl>
-# }
+#> # ℹ 6 more variables: cites_appendix <chr>, ds004_category <chr>,
+#> #   is_threatened <lgl>, is_endemic <lgl>, review_flag <lgl>,
+#> #   review_observation <chr>
 ```

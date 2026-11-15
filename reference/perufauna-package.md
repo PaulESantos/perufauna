@@ -1,4 +1,4 @@
-# perufauna: Easily Load and Harmonize Peruvian Fauna and Biodiversity Packages
+# perufauna: Integrate Taxonomic and Conservation Data for Peruvian Fauna
 
 The `perufauna` metapackage streamlines the installation, loading, and
 integration of specialized R packages focused on Peruvian fauna and
