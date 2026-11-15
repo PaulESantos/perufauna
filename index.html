@@ -152,7 +152,11 @@
 </h3>
 <p>Carga los cuatro paquetes integrados con una instrucción:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/PaulESantos/perufauna" class="external-link">perufauna</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/PaulESantos/perufauna" class="external-link">perufauna</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; ── Attaching core perufauna packages ──────────────────────── perufauna 0.1.0 ──</span></span>
+<span><span class="co">#&gt; ✔ avesperu       0.1.1       ✔ perufaunads004 0.1.0  </span></span>
+<span><span class="co">#&gt; ✔ citesperu      0.1.0       ✔ perumammals    0.0.0.2</span></span>
+<span><span class="co">#&gt; ℹ Use pf_match() for cross-referenced multi-taxa matching.</span></span></code></pre></div>
 <p>El mensaje de inicio muestra los paquetes adjuntados y sus versiones. Su contenido depende de las versiones instaladas y de los paquetes ya cargados en la sesión.</p>
 <hr>
 </div>
@@ -178,12 +182,12 @@
 <span><span class="va">diagnostico</span></span>
 <span><span class="co">#&gt; # A tibble: 5 × 12</span></span>
 <span><span class="co">#&gt;   submitted_name       accepted_name  taxonomic_group in_peru in_unop in_pacheco</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;                &lt;chr&gt;          &lt;chr&gt;           &lt;lgl&gt;   &lt;chr&gt;   &lt;lgl&gt;</span></span>
-<span><span class="co">#&gt; 1 Panthera onca        Panthera onca  Mammalia        TRUE    &lt;NA&gt;    TRUE</span></span>
-<span><span class="co">#&gt; 2 Vultur gryphus       Vultur gryphus Aves            TRUE    Reside… FALSE</span></span>
-<span><span class="co">#&gt; 3 Tremarctos ornatus   Tremarctos or… Mammalia        TRUE    &lt;NA&gt;    TRUE</span></span>
-<span><span class="co">#&gt; 4 Lagothrix flavicauda Lagothrix fla… Mammalia        TRUE    &lt;NA&gt;    TRUE</span></span>
-<span><span class="co">#&gt; 5 Homo sapiens         Homo sapiens   &lt;NA&gt;            FALSE   &lt;NA&gt;    FALSE</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;                &lt;chr&gt;          &lt;chr&gt;           &lt;lgl&gt;   &lt;chr&gt;   &lt;lgl&gt;     </span></span>
+<span><span class="co">#&gt; 1 Panthera onca        Panthera onca  Mammalia        TRUE    &lt;NA&gt;    TRUE      </span></span>
+<span><span class="co">#&gt; 2 Vultur gryphus       Vultur gryphus Aves            TRUE    Reside… FALSE     </span></span>
+<span><span class="co">#&gt; 3 Tremarctos ornatus   Tremarctos or… Mammalia        TRUE    &lt;NA&gt;    TRUE      </span></span>
+<span><span class="co">#&gt; 4 Lagothrix flavicauda Lagothrix fla… Mammalia        TRUE    &lt;NA&gt;    TRUE      </span></span>
+<span><span class="co">#&gt; 5 Homo sapiens         Homo sapiens   &lt;NA&gt;            FALSE   &lt;NA&gt;    FALSE     </span></span>
 <span><span class="co">#&gt; # ℹ 6 more variables: cites_appendix &lt;chr&gt;, ds004_category &lt;chr&gt;,</span></span>
 <span><span class="co">#&gt; #   is_threatened &lt;lgl&gt;, is_endemic &lt;lgl&gt;, review_flag &lt;lgl&gt;,</span></span>
 <span><span class="co">#&gt; #   review_observation &lt;chr&gt;</span></span></code></pre></div>
@@ -230,12 +234,12 @@
 <code class="sourceCode R"><span><span class="fu"><a href="reference/pf_status.html">pf_status</a></span><span class="op">(</span><span class="va">especies</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 5 × 8</span></span>
 <span><span class="co">#&gt;   submitted_name  accepted_name taxonomic_group occurrence_status cites_appendix</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;           &lt;chr&gt;         &lt;chr&gt;           &lt;chr&gt;             &lt;chr&gt;</span></span>
-<span><span class="co">#&gt; 1 Panthera onca   Panthera onca Mammalia        Registrado en Pe… I</span></span>
-<span><span class="co">#&gt; 2 Vultur gryphus  Vultur gryph… Aves            Residente         I</span></span>
-<span><span class="co">#&gt; 3 Tremarctos orn… Tremarctos o… Mammalia        Registrado en Pe… I</span></span>
-<span><span class="co">#&gt; 4 Lagothrix flav… Lagothrix fl… Mammalia        Endémico          I</span></span>
-<span><span class="co">#&gt; 5 Homo sapiens    Homo sapiens  &lt;NA&gt;            &lt;NA&gt;              &lt;NA&gt;</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;           &lt;chr&gt;         &lt;chr&gt;           &lt;chr&gt;             &lt;chr&gt;         </span></span>
+<span><span class="co">#&gt; 1 Panthera onca   Panthera onca Mammalia        Registrado en Pe… I             </span></span>
+<span><span class="co">#&gt; 2 Vultur gryphus  Vultur gryph… Aves            Residente         I             </span></span>
+<span><span class="co">#&gt; 3 Tremarctos orn… Tremarctos o… Mammalia        Registrado en Pe… I             </span></span>
+<span><span class="co">#&gt; 4 Lagothrix flav… Lagothrix fl… Mammalia        Endémico          I             </span></span>
+<span><span class="co">#&gt; 5 Homo sapiens    Homo sapiens  &lt;NA&gt;            &lt;NA&gt;              &lt;NA&gt;          </span></span>
 <span><span class="co">#&gt; # ℹ 3 more variables: ds004_category &lt;chr&gt;, review_observation &lt;chr&gt;,</span></span>
 <span><span class="co">#&gt; #   review_flag &lt;lgl&gt;</span></span></code></pre></div>
 <p>El resultado incluye <code>submitted_name</code>, <code>accepted_name</code>, <code>taxonomic_group</code>, <code>occurrence_status</code>, <code>cites_appendix</code>, <code>ds004_category</code>, <code>review_observation</code> y <code>review_flag</code>. Para mamíferos registrados, <code>occurrence_status</code> indica <code>"Endémico"</code> cuando corresponde y <code>"Registrado en Perú"</code> en los demás casos; para aves usa el estado devuelto por la lista de referencia.</p>
@@ -255,10 +259,10 @@
 <span><span class="fu"><a href="reference/pf_match.html">pf_match</a></span><span class="op">(</span><span class="va">especies_con_error</span>, max_distance <span class="op">=</span> <span class="fl">0.15</span>, max_edit_distance <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 3 × 12</span></span>
 <span><span class="co">#&gt;   submitted_name     accepted_name    taxonomic_group in_peru in_unop in_pacheco</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;              &lt;chr&gt;            &lt;chr&gt;           &lt;lgl&gt;   &lt;chr&gt;   &lt;lgl&gt;</span></span>
-<span><span class="co">#&gt; 1 Pantera onca       Panthera onca    Mammalia        TRUE    &lt;NA&gt;    TRUE</span></span>
-<span><span class="co">#&gt; 2 Tremarctos ornatus Tremarctos orna… Mammalia        TRUE    &lt;NA&gt;    TRUE</span></span>
-<span><span class="co">#&gt; 3 Vultur griphus     Vultur gryphus   Aves            TRUE    Reside… FALSE</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;              &lt;chr&gt;            &lt;chr&gt;           &lt;lgl&gt;   &lt;chr&gt;   &lt;lgl&gt;     </span></span>
+<span><span class="co">#&gt; 1 Pantera onca       Panthera onca    Mammalia        TRUE    &lt;NA&gt;    TRUE      </span></span>
+<span><span class="co">#&gt; 2 Tremarctos ornatus Tremarctos orna… Mammalia        TRUE    &lt;NA&gt;    TRUE      </span></span>
+<span><span class="co">#&gt; 3 Vultur griphus     Vultur gryphus   Aves            TRUE    Reside… FALSE     </span></span>
 <span><span class="co">#&gt; # ℹ 6 more variables: cites_appendix &lt;chr&gt;, ds004_category &lt;chr&gt;,</span></span>
 <span><span class="co">#&gt; #   is_threatened &lt;lgl&gt;, is_endemic &lt;lgl&gt;, review_flag &lt;lgl&gt;,</span></span>
 <span><span class="co">#&gt; #   review_observation &lt;chr&gt;</span></span></code></pre></div>
@@ -268,9 +272,9 @@
 <span>  , <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"submitted_name"</span>, <span class="st">"accepted_name"</span>, <span class="st">"cites_appendix"</span>, <span class="st">"review_observation"</span><span class="op">)</span></span>
 <span><span class="op">]</span></span>
 <span><span class="co">#&gt; # A tibble: 2 × 4</span></span>
-<span><span class="co">#&gt;   submitted_name accepted_name  cites_appendix review_observation</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;          &lt;chr&gt;          &lt;chr&gt;          &lt;chr&gt;</span></span>
-<span><span class="co">#&gt; 1 Vultur gryphus Vultur gryphus I              &lt;NA&gt;</span></span>
+<span><span class="co">#&gt;   submitted_name accepted_name  cites_appendix review_observation          </span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;          &lt;chr&gt;          &lt;chr&gt;          &lt;chr&gt;                       </span></span>
+<span><span class="co">#&gt; 1 Vultur gryphus Vultur gryphus I              &lt;NA&gt;                        </span></span>
 <span><span class="co">#&gt; 2 Vultor gryphos Vultur gryphus I              Necesidad de revisión manual</span></span></code></pre></div>
 <hr>
 </div>
@@ -296,10 +300,10 @@
 <span><span class="va">resultado</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"submitted_name"</span>, <span class="st">"taxonomic_group"</span>, <span class="st">"cites_appendix"</span>, <span class="st">"ds004_category"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt; # A tibble: 4 × 4</span></span>
 <span><span class="co">#&gt;   submitted_name       taxonomic_group cites_appendix ds004_category</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;                &lt;chr&gt;           &lt;chr&gt;          &lt;chr&gt;</span></span>
-<span><span class="co">#&gt; 1 Panthera onca        Mammalia        I              NT</span></span>
-<span><span class="co">#&gt; 2 Vultur gryphus       Aves            I              EN</span></span>
-<span><span class="co">#&gt; 3 Tremarctos ornatus   Mammalia        I              VU</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;                &lt;chr&gt;           &lt;chr&gt;          &lt;chr&gt;         </span></span>
+<span><span class="co">#&gt; 1 Panthera onca        Mammalia        I              NT            </span></span>
+<span><span class="co">#&gt; 2 Vultur gryphus       Aves            I              EN            </span></span>
+<span><span class="co">#&gt; 3 Tremarctos ornatus   Mammalia        I              VU            </span></span>
 <span><span class="co">#&gt; 4 Lagothrix flavicauda Mammalia        I              CR</span></span></code></pre></div>
 <hr>
 </div>
@@ -313,10 +317,10 @@
 <span>            <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"accepted_name"</span>, <span class="st">"taxonomic_group"</span>, <span class="st">"ds004_category"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt; # A tibble: 4 × 3</span></span>
 <span><span class="co">#&gt;   accepted_name        taxonomic_group ds004_category</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;                &lt;chr&gt;           &lt;chr&gt;</span></span>
-<span><span class="co">#&gt; 1 Panthera onca        Mammalia        NT</span></span>
-<span><span class="co">#&gt; 2 Vultur gryphus       Aves            EN</span></span>
-<span><span class="co">#&gt; 3 Tremarctos ornatus   Mammalia        VU</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;                &lt;chr&gt;           &lt;chr&gt;         </span></span>
+<span><span class="co">#&gt; 1 Panthera onca        Mammalia        NT            </span></span>
+<span><span class="co">#&gt; 2 Vultur gryphus       Aves            EN            </span></span>
+<span><span class="co">#&gt; 3 Tremarctos ornatus   Mammalia        VU            </span></span>
 <span><span class="co">#&gt; 4 Lagothrix flavicauda Mammalia        CR</span></span>
 <span></span>
 <span><span class="co"># Coincidencias sin revisión pendiente en el Apéndice I de CITES</span></span>
@@ -325,17 +329,17 @@
 <span>            <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"accepted_name"</span>, <span class="st">"cites_appendix"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt; # A tibble: 4 × 2</span></span>
 <span><span class="co">#&gt;   accepted_name        cites_appendix</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;                &lt;chr&gt;</span></span>
-<span><span class="co">#&gt; 1 Panthera onca        I</span></span>
-<span><span class="co">#&gt; 2 Vultur gryphus       I</span></span>
-<span><span class="co">#&gt; 3 Tremarctos ornatus   I</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;                &lt;chr&gt;         </span></span>
+<span><span class="co">#&gt; 1 Panthera onca        I             </span></span>
+<span><span class="co">#&gt; 2 Vultur gryphus       I             </span></span>
+<span><span class="co">#&gt; 3 Tremarctos ornatus   I             </span></span>
 <span><span class="co">#&gt; 4 Lagothrix flavicauda I</span></span>
 <span></span>
 <span><span class="co"># Especies endémicas del Perú</span></span>
 <span><span class="va">diagnostico</span><span class="op">[</span><span class="va">diagnostico</span><span class="op">$</span><span class="va">is_endemic</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"accepted_name"</span>, <span class="st">"taxonomic_group"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt; # A tibble: 1 × 2</span></span>
 <span><span class="co">#&gt;   accepted_name        taxonomic_group</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;                &lt;chr&gt;</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;                &lt;chr&gt;          </span></span>
 <span><span class="co">#&gt; 1 Lagothrix flavicauda Mammalia</span></span></code></pre></div>
 <hr>
 </div>
@@ -359,10 +363,10 @@
 <span><span class="fu"><a href="reference/perufauna_deps.html">perufauna_deps</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 4 × 3</span></span>
 <span><span class="co">#&gt;   package        installed local_version</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;          &lt;lgl&gt;     &lt;chr&gt;</span></span>
-<span><span class="co">#&gt; 1 avesperu       TRUE      0.1.1</span></span>
-<span><span class="co">#&gt; 2 perumammals    TRUE      0.0.0.2</span></span>
-<span><span class="co">#&gt; 3 citesperu      TRUE      0.1.0</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;          &lt;lgl&gt;     &lt;chr&gt;        </span></span>
+<span><span class="co">#&gt; 1 avesperu       TRUE      0.1.1        </span></span>
+<span><span class="co">#&gt; 2 perumammals    TRUE      0.0.0.2      </span></span>
+<span><span class="co">#&gt; 3 citesperu      TRUE      0.1.0        </span></span>
 <span><span class="co">#&gt; 4 perufaunads004 TRUE      0.1.0</span></span>
 <span></span>
 <span><span class="co"># Conflictos entre funciones de paquetes adjuntos</span></span>
@@ -415,6 +419,10 @@ https://paulesantos.github.io/perufauna/</code></pre>
 <strong>Código y reporte de problemas:</strong> <a href="https://github.com/PaulESantos/perufauna" class="external-link">repositorio en GitHub</a>
 </li>
 </ul>
+<p>Para reconstruir el sitio desde el código actual, ejecuta:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">pkgdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgdown.r-lib.org/reference/build_site_github_pages.html" class="external-link">build_site_github_pages</a></span><span class="op">(</span>install <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>La instalación temporal evita que las viñetas usen una versión anterior de <code>perufauna</code> instalada en la biblioteca local.</p>
 <hr>
 </div>
 <div class="section level2">
