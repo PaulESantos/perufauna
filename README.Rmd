@@ -265,6 +265,14 @@ https://paulesantos.github.io/perufauna/
 * **Guía de uso:** [consultas con `pf_match()` y `pf_status()`](https://paulesantos.github.io/perufauna/articles/uso-pf-match-pf-status.html)
 * **Código y reporte de problemas:** [repositorio en GitHub](https://github.com/PaulESantos/perufauna)
 
+Para reconstruir el sitio desde el código actual, ejecuta:
+
+```r
+pkgdown::build_site_github_pages(install = TRUE)
+```
+
+La instalación temporal evita que las viñetas usen una versión anterior de `perufauna` instalada en la biblioteca local.
+
 ---
 
 ## Licencia
