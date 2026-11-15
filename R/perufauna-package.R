@@ -1,4 +1,4 @@
-#' perufauna: Easily Load and Harmonize Peruvian Fauna and Biodiversity Packages
+#' perufauna: Integrate Taxonomic and Conservation Data for Peruvian Fauna
 #'
 #' @description
 #' The \code{perufauna} metapackage streamlines the installation, loading, and
@@ -14,6 +14,7 @@
 #' functions such as \code{\link{pf_match}} and \code{\link{pf_status}} to analyze species across
 #' all taxonomic and regulatory sources in a single call.
 #'
+#' @encoding UTF-8
 #' @keywords internal
 "_PACKAGE"
 

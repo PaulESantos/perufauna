@@ -84,3 +84,25 @@ test_that("pf_match reports correct status for endemic and vagrant birds", {
   expect_equal(res$is_endemic, c(TRUE, FALSE))
 })
 
+test_that("wider reconciliation exposes candidates for manual review", {
+  result <- pf_match(c("Vultur gryphus", "Vultor gryphos"))
+  expect_identical(result$accepted_name, rep("Vultur gryphus", 2))
+  expect_identical(result$review_flag, c(FALSE, TRUE))
+  expect_identical(result$cites_appendix[2], "I")
+  expect_false(any(c("review_reason", "cites_candidate_appendix") %in% names(result)))
+  expect_true(is.na(result$review_observation[1]))
+  expect_true(grepl("Necesidad de revisi", result$review_observation[2], fixed = TRUE))
+  expect_identical(result$ds004_category[2], "EN")
+
+  strict <- pf_match("Vultor gryphos", max_distance = 0, max_edit_distance = 0)
+  expect_true(is.na(strict$cites_appendix))
+  expect_true(is.na(strict$ds004_category))
+})
+
+test_that("reconciled mammal names also require review", {
+  result <- pf_match("Pantera onca")
+  expect_identical(result$accepted_name, "Panthera onca")
+  expect_true(result$review_flag)
+  expect_true(grepl("Necesidad de revisi", result$review_observation, fixed = TRUE))
+})
+

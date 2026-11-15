@@ -1,11 +1,14 @@
-## perufauna (development version)
-
-* Added `run_perufauna_app()` with five interactive views, shared file and text
-  input, background queries, result review, and CSV/XLSX downloads.
-
 ## perufauna 0.1.0
 
-* First CRAN release. Matching now separates the relative bird distance from
+* Raised the default bird distance to 0.15 and CITES/D.S. 004 edit limit to 2. Approximate matches carry `review_flag` and a manual-review observation. The integrated CITES column shows the suggested appendix while marking candidates that need taxonomic validation.
+* Added `run_perufauna_app()`, `pf_app()`, and `perufauna_app()` with five interactive views, shared file and text input, background and synchronous fallback queries, result review, and CSV/XLSX downloads.
+* Modernized the Shiny application interface with a compact, fold-optimized navbar layout, integrated query toolbar, streamlined inputs, and KPI summary tiles.
+* Added standalone deployment entry points via root `app.R` and `system.file("app", package = "perufauna")` / `system.file("shiny", package = "perufauna")`.
+* Added automatic detection of comma (`,`) and semicolon (`;`) delimiters for CSV files exported from Spanish/Latin American Excel versions.
+* Added full Spanish localization to interactive DT data tables.
+* Added configurable request limits via `max_request_size` and option forwarding to `shiny::shinyApp()`.
+
+* Initial release. Matching separates the relative bird distance from
   integer edit distances used by CITES and D.S. 004.
 * CITES inclusion alone no longer establishes occurrence in Peru. Lookup
   failures report the affected source instead of silently returning negatives.

@@ -9,22 +9,26 @@
 #'   containing species names.
 #' @param ... Arguments forwarded to \code{\link{pf_match}}.
 #'
-#' @return A \code{tibble::tibble} with 6 atomized columns:
+#' @return A \code{tibble::tibble} with summary and review columns:
 #' \itemize{
 #'   \item \code{submitted_name}: The raw input name.
-#'   \item \code{accepted_name}: Validated/accepted scientific binomial name.
+#'   \item \code{accepted_name}: Name returned by the matching sources; an
+#'     approximate correction is a candidate until manually reviewed.
 #'   \item \code{taxonomic_group}: Taxonomic class/group ("Aves", "Mammalia", etc., or NA).
 #'   \item \code{occurrence_status}: UNOP status for birds, "Endémico" for
 #'     endemic mammals, "Registrado en Perú" for other taxa listed in a
 #'     Peruvian reference, or NA when occurrence is not established.
-#'   \item \code{cites_appendix}: CITES appendix ("I", "II", "III", or NA).
+#'   \item \code{cites_appendix}: CITES appendix ("I", "II", "III", or NA),
+#'     including approximate candidates marked for manual review.
 #'   \item \code{ds004_category}: National threat category under D.S. 004-2014-MINAGRI ("CR", "EN", "VU", "NT", or NA).
+#'   \item \code{review_flag}: Whether an approximate match needs manual review.
+#'   \item \code{review_observation}: "Necesidad de revisión manual" when
+#'     additional review is needed; otherwise NA.
 #' }
+#' @encoding UTF-8
 #' @export
 #' @examples
-#' \donttest{
 #' pf_status(c("Panthera onca", "Vultur gryphus", "Tremarctos ornatus"))
-#' }
 pf_status <- function(splist, ...) {
   df <- pf_match(splist, ...)
   if (nrow(df) == 0) {
@@ -34,7 +38,9 @@ pf_status <- function(splist, ...) {
       taxonomic_group   = character(),
       occurrence_status = character(),
       cites_appendix    = character(),
-      ds004_category    = character()
+      ds004_category    = character(),
+      review_observation = character(),
+      review_flag       = logical()
     ))
   }
 
@@ -63,6 +69,8 @@ pf_status <- function(splist, ...) {
     taxonomic_group   = tax_grp,
     occurrence_status = occ_status,
     cites_appendix    = df$cites_appendix,
-    ds004_category    = df$ds004_category
+    ds004_category    = df$ds004_category,
+    review_observation = df$review_observation,
+    review_flag       = df$review_flag
   )
 }

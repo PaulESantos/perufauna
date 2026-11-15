@@ -1,6 +1,6 @@
 app_records <- function(text = "", file = NULL, column = NULL) {
-  lines <- if (is.null(text) || is.na(text) || !nzchar(text)) character() else
-    trimws(strsplit(text, "\r\n|\n|\r")[[1]])
+  lines <- if (is.null(text) || !length(text) || is.na(text[1]) || !nzchar(text[1])) character() else
+    trimws(strsplit(text[1], "\r\n|\n|\r")[[1]])
   nonempty <- which(nzchar(lines))
   pasted <- data.frame(
     submitted_name = lines[nonempty],
@@ -9,8 +9,8 @@ app_records <- function(text = "", file = NULL, column = NULL) {
     stringsAsFactors = FALSE
   )
   if (is.null(file)) return(pasted)
-  if (is.null(column) || !column %in% names(file$data)) {
-    stop("Selecciona la columna que contiene los nombres científicos.", call. = FALSE)
+  if (is.null(column) || !length(column) || !is.character(column) || !column %in% names(file$data)) {
+    stop("Selecciona la columna que contiene los nombres cient\u00EDficos.", call. = FALSE)
   }
   uploaded <- data.frame(
     submitted_name = as.character(file$data[[column]]),
@@ -40,10 +40,17 @@ app_read_file <- function(path, filename, header = TRUE) {
                                             .name_repair = "unique"),
                           stringsAsFactors = FALSE)
     header_rows <- as.integer(header)
+  } else if (ext == "csv") {
+    first_line <- readLines(path, n = 1, warn = FALSE, encoding = "UTF-8")
+    sep <- if (length(first_line) && grepl(";", first_line[1]) && !grepl(",", first_line[1])) ";" else ","
+    data <- utils::read.csv(path, header = header, sep = sep, check.names = FALSE,
+                            stringsAsFactors = FALSE, fileEncoding = "UTF-8-BOM",
+                            na.strings = c("NA"))
+    header_rows <- as.integer(header)
   } else {
-    reader <- if (ext == "csv") utils::read.csv else utils::read.delim
-    data <- reader(path, header = header, check.names = FALSE, stringsAsFactors = FALSE,
-                   fileEncoding = "UTF-8-BOM", na.strings = c("NA"))
+    data <- utils::read.delim(path, header = header, check.names = FALSE,
+                              stringsAsFactors = FALSE, fileEncoding = "UTF-8-BOM",
+                              na.strings = c("NA"))
     header_rows <- as.integer(header)
   }
   if (!ncol(data)) stop("El archivo no contiene columnas.", call. = FALSE)
@@ -60,26 +67,36 @@ app_guess_column <- function(data) {
 }
 
 app_validate_records <- function(records) {
-  if (!nrow(records)) stop("Ingresa al menos un nombre científico.", call. = FALSE)
-  if (nrow(records) > 10000L) stop("El máximo es de 10 000 nombres por consulta.", call. = FALSE)
+  if (!nrow(records)) stop("Ingresa al menos un nombre cient\u00EDfico.", call. = FALSE)
+  if (nrow(records) > 10000L) stop("El m\u00E1ximo es de 10 000 nombres por consulta.", call. = FALSE)
   if (any(nchar(records$submitted_name) > 200L, na.rm = TRUE)) {
-    stop("Cada nombre debe tener como máximo 200 caracteres.", call. = FALSE)
+    stop("Cada nombre debe tener como m\u00E1ximo 200 caracteres.", call. = FALSE)
   }
   invisible(records)
 }
 
 app_query <- function(module, names, settings) {
   switch(module,
-    integrada = if (identical(settings$view, "resumen")) {
-      pf_status(names, max_distance = settings$bird_distance,
-                max_edit_distance = settings$edit_distance)
-    } else {
-      pf_match(names, max_distance = settings$bird_distance,
-               max_edit_distance = settings$edit_distance)
+    integrada = {
+      view <- if (is.character(settings$view) && length(settings$view) == 1L) settings$view else "resumen"
+      b_dist <- if (is.numeric(settings$bird_distance) && length(settings$bird_distance) == 1L) {
+        settings$bird_distance
+      } else 0.15
+      e_dist <- if (is.numeric(settings$edit_distance) && length(settings$edit_distance) == 1L) {
+        settings$edit_distance
+      } else 2L
+      if (identical(view, "resumen")) {
+        pf_status(names, max_distance = b_dist, max_edit_distance = e_dist)
+      } else {
+        pf_match(names, max_distance = b_dist, max_edit_distance = e_dist)
+      }
     },
     aves = {
+      dist <- if (is.numeric(settings$distance) && length(settings$distance) == 1L) {
+        settings$distance
+      } else 0.15
       result <- avesperu::search_avesperu(
-        names, max_distance = settings$distance,
+        names, max_distance = dist,
         return_details = TRUE, parallel = FALSE
       )
       audit <- attr(result, "reconciliation")
@@ -91,24 +108,87 @@ app_query <- function(module, names, settings) {
       result
     },
     mamiferos = match_peru_mammals(names),
-    cites = citesperu::cites_match(
-      names, taxon = settings$taxon, edition = settings$edition,
-      max_dist = settings$distance, allow_synonyms = settings$synonyms,
-      genus_fallback = settings$genus, output = "standard"
-    ),
-    amenaza = perufaunads004::fauna_matching(
-      names, max_distance = settings$distance, fuzzy = settings$fuzzy,
-      genus_match = settings$genus, group = if (nzchar(settings$group)) settings$group else NULL
-    ),
-    stop("Módulo de consulta desconocido.", call. = FALSE)
+    cites = {
+      taxon <- if (is.character(settings$taxon) && length(settings$taxon) == 1L && nzchar(settings$taxon)) {
+        settings$taxon
+      } else "fauna"
+      edition <- if (is.character(settings$edition) && length(settings$edition) == 1L && nzchar(settings$edition)) {
+        settings$edition
+      } else "latest"
+      dist <- if (is.numeric(settings$distance) && length(settings$distance) == 1L) {
+        settings$distance
+      } else 2L
+      synonyms <- if (is.logical(settings$synonyms) && length(settings$synonyms) == 1L) {
+        settings$synonyms
+      } else TRUE
+      genus <- if (is.logical(settings$genus) && length(settings$genus) == 1L) {
+        settings$genus
+      } else FALSE
+      citesperu::cites_match(
+        names, taxon = taxon, edition = edition,
+        max_dist = dist, allow_synonyms = synonyms,
+        genus_fallback = genus, output = "standard"
+      )
+    },
+    amenaza = {
+      grp <- if (is.character(settings$group) && length(settings$group) == 1L && nzchar(settings$group)) {
+        settings$group
+      } else {
+        NULL
+      }
+      dist <- if (is.numeric(settings$distance) && length(settings$distance) == 1L) {
+        settings$distance
+      } else {
+        2L
+      }
+      fuzzy <- if (is.logical(settings$fuzzy) && length(settings$fuzzy) == 1L) {
+        settings$fuzzy
+      } else {
+        TRUE
+      }
+      genus <- if (is.logical(settings$genus) && length(settings$genus) == 1L) {
+        settings$genus
+      } else {
+        TRUE
+      }
+      perufaunads004::fauna_matching(
+        names, max_distance = dist, fuzzy = fuzzy,
+        genus_match = genus, group = grp
+      )
+    },
+    stop("M\u00F3dulo de consulta desconocido.", call. = FALSE)
   )
 }
 
 app_result_with_source <- function(result, records) {
   if (!is.data.frame(result) || nrow(result) != nrow(records)) {
-    stop("La búsqueda devolvió un número inesperado de filas.", call. = FALSE)
+    stop("La b\u00FAsqueda devolvi\u00F3 un n\u00FAmero inesperado de filas.", call. = FALSE)
   }
   result <- as.data.frame(result, stringsAsFactors = FALSE)
+  result <- result[, !names(result) %in% c("review_reason", "cites_candidate_appendix"),
+                   drop = FALSE]
+  if (!"review_flag" %in% names(result)) {
+    if ("match_assessment" %in% names(result)) {
+      review <- !is.na(result$match_assessment) &
+        result$match_assessment == "requires_taxonomic_validation"
+    } else if (all(c("Orig.Name", "Matched.Name", "matched") %in% names(result))) {
+      review <- !is.na(result$matched) & result$matched &
+        !is.na(result$Matched.Name) &
+        tolower(trimws(result$Orig.Name)) != tolower(trimws(result$Matched.Name))
+    } else if ("match_type" %in% names(result)) {
+      review <- !is.na(result$match_type) &
+        result$match_type %in% c("fuzzy", "genus")
+    } else if ("dist" %in% names(result)) {
+      review <- !is.na(result$dist) & result$dist > 0
+    } else {
+      review <- rep(FALSE, nrow(result))
+    }
+    result$review_flag <- review
+  }
+  if (!"review_observation" %in% names(result)) {
+    result$review_observation <- ifelse(result$review_flag %in% TRUE,
+                                        "Necesidad de revisi\u00F3n manual", NA_character_)
+  }
   result$source_file <- records$source_file
   result$source_row <- records$source_row
   result
@@ -118,16 +198,24 @@ app_field_label <- function(fields) {
   labels <- c(
     submitted_name = "Nombre ingresado", name_submitted = "Nombre normalizado",
     accepted_name = "Nombre aceptado", matched_name = "Nombre encontrado",
-    taxonomic_group = "Grupo taxonómico", in_peru = "Registrado en Perú",
+    scientific_name = "Nombre cient\u00EDfico",
+    taxonomic_group = "Grupo taxon\u00F3mico", in_peru = "Registrado en Per\u00FA",
     in_unop = "Estado en UNOP", in_pacheco = "Listado en Pacheco",
-    cites_appendix = "Apéndice CITES", ds004_category = "Categoría nacional",
-    is_threatened = "En D.S. 004 o Libro Rojo", is_endemic = "Endémico",
+    cites_appendix = "Ap\u00E9ndice CITES", ds004_category = "Categor\u00EDa nacional",
+    is_threatened = "En D.S. 004 o Libro Rojo", is_endemic = "End\u00E9mico",
     occurrence_status = "Estado de presencia", match_type = "Tipo de coincidencia",
-    match_status = "Estado de coincidencia", match_assessment = "Evaluación",
-    ds004_code = "Categoría D.S. 004", libro_rojo_code = "Categoría Libro Rojo",
+    match_status = "Estado de coincidencia", match_assessment = "Evaluaci\u00F3n",
+    ds004_code = "Categor\u00EDa D.S. 004", libro_rojo_code = "Categor\u00EDa Libro Rojo",
     in_ds004 = "En D.S. 004", in_libro_rojo = "En Libro Rojo",
     source_file = "Origen", source_row = "Fila de origen",
-    review_flag = "Requiere revisión", review_reason = "Motivo de revisión"
+    review_flag = "Requiere revisi\u00F3n",
+    review_observation = "Observaci\u00F3n",
+    english_name = "Nombre en ingl\u00E9s", spanish_name = "Nombre en espa\u00F1ol",
+    dist = "Distancia de edici\u00F3n", apendice = "Ap\u00E9ndice CITES",
+    is_cites = "Listado en CITES", cites_year = "A\u00F1o CITES",
+    order = "Orden", family = "Familia", genus = "G\u00E9nero",
+    specific_epithet = "Ep\u00EDteto espec\u00EDfico", class = "Clase",
+    `Presence.Status` = "Estado de presencia", `Endemism.Status` = "Condici\u00F3n de endemismo"
   )
   unname(vapply(fields, function(field) {
     if (field %in% names(labels)) labels[[field]] else

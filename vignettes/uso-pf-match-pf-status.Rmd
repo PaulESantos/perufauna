@@ -28,8 +28,8 @@ En estudios de biodiversidad, consultoría ambiental (Líneas Base para EIA, DIA
 Tradicionalmente, realizar esta verificación demandaba consultar cada base de datos por separado, cruzar identificadores manualmente y conciliar nomenclaturas discrepantes. 
 
 El metapaquete **`perufauna`** unifica este ecosistema, y provee dos funciones principales de consulta cruzada:
-* **`pf_match()`**: Reconciliación profunda y multidimensional con 10 variables estructuradas por taxón.
-* **`pf_status()`**: Resumen ejecutivo y formateado de 6 columnas, ideal para reportes técnicos, tablas de evaluación y anexos de impacto ambiental.
+* **`pf_match()`**: Consulta integrada con 12 variables, incluidas las señales de revisión manual.
+* **`pf_status()`**: Resumen de 8 columnas para reportes técnicos y tablas de evaluación.
 
 ---
 
@@ -72,26 +72,28 @@ resultado_match
 
 ### Estructura de las variables devueltas por `pf_match()`
 
-La salida de `pf_match()` es un `tibble` consistente de 10 columnas:
+La salida de `pf_match()` es un `tibble` de 12 columnas:
 
 | Columna | Tipo | Descripción |
 |:---|:---|:---|
 | `submitted_name` | `character` | Nombre científico tal como fue ingresado por el usuario. |
-| `accepted_name` | `character` | Nombre binomial validado y aceptado según el estándar taxonómico. |
+| `accepted_name` | `character` | Nombre encontrado o sugerido; una corrección aproximada requiere revisión manual. |
 | `taxonomic_group` | `character` | Clase o grupo biológico mayor (`"Aves"`, `"Mammalia"`, etc.). |
 | `in_peru` | `logical` | `TRUE` si figura en UNOP, Pacheco o referencias nacionales de fauna; CITES solo no confirma presencia. |
 | `in_unop` | `character` | Estatus en el checklist UNOP (`"Residente"`, `"Endémico"`, `"Migratorio"`, etc.). |
 | `in_pacheco` | `logical` | `TRUE` si figura en el checklist de mamíferos de Pacheco et al. (2021). |
-| `cites_appendix` | `character` | Apéndice CITES asignado (`"I"`, `"II"`, `"III"` o `NA`). |
+| `cites_appendix` | `character` | Apéndice CITES encontrado o sugerido (`"I"`, `"II"`, `"III"` o `NA`); revisar la observación antes de interpretarlo como confirmado. |
 | `ds004_category` | `character` | Categoría D.S. 004 o, en su ausencia, del Libro Rojo SERFOR. |
 | `is_threatened` | `logical` | `TRUE` si figura en D.S. 004 o el Libro Rojo; este último no establece protección legal por sí solo. |
 | `is_endemic` | `logical` | `TRUE` si la especie es endémica del territorio peruano. |
+| `review_flag` | `logical` | `TRUE` si alguna coincidencia necesita revisión manual. |
+| `review_observation` | `character` | «Necesidad de revisión manual» para las filas señaladas; `NA` en los demás casos. |
 
 ---
 
 ## 4. Tolerancia a Errores Tipográficos (*Fuzzy Matching*)
 
-Los inventarios de campo a menudo contienen erratas de digitación. `max_distance` controla la distancia relativa de `avesperu` (por defecto `0.1`) y `max_edit_distance` el número entero de ediciones en CITES y D.S. 004 (por defecto `1`). El motor de mamíferos usa sus propias reglas:
+Los inventarios de campo a menudo contienen erratas de digitación. `max_distance` controla la distancia relativa de `avesperu` (por defecto `0.15`) y `max_edit_distance` el número entero de ediciones en CITES y D.S. 004 (por defecto `2`). El motor de mamíferos usa sus propias reglas. Aumentar estos límites genera más candidatos, que se señalan para revisión manual:
 
 ```{r pf-match-fuzzy}
 especies_con_error <- c(
@@ -100,7 +102,15 @@ especies_con_error <- c(
   "Vultur griphus"       # 'i' en vez de 'y'
 )
 
-pf_match(especies_con_error, max_distance = 0.15, max_edit_distance = 1)
+pf_match(especies_con_error, max_distance = 0.15, max_edit_distance = 2)
+```
+
+En particular, un apéndice CITES puede ser una propuesta cuando el nombre de entrada necesita corrección. Conserva la observación junto al resultado:
+
+```{r pf-match-review}
+pf_status(c("Vultur gryphus", "Vultor gryphos"))[
+  , c("submitted_name", "accepted_name", "cites_appendix", "review_observation")
+]
 ```
 
 ---
@@ -133,7 +143,7 @@ resultado_inventario[, c("submitted_name", "taxonomic_group", "cites_appendix", 
 
 Cuando se redactan capítulos de biodiversidad, matrices de impacto ambiental o fichas técnicas para expedientes, se suele requerir una tabla ejecutiva y sintética que concentre el estatus de residencia, CITES y Decreto Supremo.
 
-La función `pf_status()` simplifica esto a un formato atomizado de 6 columnas:
+La función `pf_status()` simplifica esto a un formato de 8 columnas:
 
 ```{r pf-status}
 status_resumen <- pf_status(especies)
@@ -148,6 +158,8 @@ status_resumen
 4. `occurrence_status`: Estatus UNOP para aves, `"Endémico"` para mamíferos endémicos, `"Registrado en Perú"` para otras especies documentadas o `NA` si no se establece presencia.
 5. `cites_appendix`: Apéndice regulatorio CITES (`"I"`, `"II"`, `"III"`).
 6. `ds004_category`: Categoría nacional de amenaza (`"CR"`, `"EN"`, `"VU"`, `"NT"`).
+7. `review_observation`: Señala cuándo se necesita revisión manual.
+8. `review_flag`: Permite filtrar esas filas con un valor lógico.
 
 ---
 
@@ -156,12 +168,12 @@ status_resumen
 Al estar integradas en estructuras `tibble`, las salidas de `pf_match()` y `pf_status()` se integran naturalmente con operaciones de filtrado y resumen:
 
 ```{r filtros}
-# Filtrar especies en D.S. 004 o el Libro Rojo SERFOR
-amenazadas <- resultado_match[resultado_match$is_threatened, ]
+# Filtrar coincidencias en D.S. 004 o Libro Rojo sin revisión pendiente
+amenazadas <- resultado_match[resultado_match$is_threatened & !resultado_match$review_flag, ]
 amenazadas[, c("accepted_name", "taxonomic_group", "ds004_category")]
 
-# Filtrar especies incluidas en el Apéndice I de CITES (máxima restricción comercial)
-cites_i <- resultado_match[!is.na(resultado_match$cites_appendix) & resultado_match$cites_appendix == "I", ]
+# Filtrar coincidencias del Apéndice I de CITES que no requieren revisión manual
+cites_i <- resultado_match[!is.na(resultado_match$cites_appendix) & resultado_match$cites_appendix == "I" & !resultado_match$review_flag, ]
 cites_i[, c("accepted_name", "cites_appendix")]
 
 # Filtrar especies endémicas del Perú
@@ -173,6 +185,6 @@ endemicas[, c("accepted_name", "taxonomic_group", "is_endemic")]
 
 ## 8. Resumen y Buenas Prácticas
 
-* Utiliza **`pf_match()`** cuando necesites trazabilidad completa por base de datos (UNOP, Pacheco, CITES, D.S. 004) o requieras evaluar banderas booleanas (`in_peru`, `is_threatened`, `is_endemic`).
+* Utiliza **`pf_match()`** cuando necesites consultar conjuntamente las cuatro fuentes o evaluar banderas booleanas (`in_peru`, `is_threatened`, `is_endemic`). Conserva `review_observation` en los informes y verifica las filas señaladas antes de interpretar una categoría normativa.
 * Utiliza **`pf_status()`** para elaborar matrices ejecutivas, cuadros de anexos en informes ambientales o resúmenes rápidos para presentaciones.
 * Mantén tus paquetes actualizados ejecutando `perufauna_sitrep()` para asegurar que las listas de especies reflejen las últimas adiciones normativas y taxonómicas.

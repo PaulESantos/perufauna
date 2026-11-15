@@ -1,14 +1,16 @@
 Package: perufauna
-Title: Easily Load and Harmonize Peruvian Fauna and Biodiversity Packages
+Title: Integrate Taxonomic and Conservation Data for Peruvian Fauna
 Version: 0.1.0
 Authors@R: 
     person("Paul E.", "Santos Andrade", , 
     "paulefrens@gmail.com", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0002-6635-0375"))
-Description: A metapackage providing an integrated toolkit to load, 
-    cross-reference, and validate biodiversity data for Peruvian fauna across
-    specialized taxonomic backbones (avesperu, perumammals) and regulatory 
-    threat frameworks (citesperu, perufaunads004).
+Description: Cross-references scientific names against Peruvian bird and mammal
+    checklists and conservation lists using 'avesperu', 'perumammals',
+    'citesperu', and 'perufaunads004'. Provides integrated matching and summary
+    functions, flags approximate names for manual review, and offers an optional
+    'Shiny' application for batch queries and file exports. The mammal checklist
+    follows Pacheco et al. (2021) <doi:10.15381/rpb.v28i4.21019>.
 License: MIT + file LICENSE
 Depends:
     R (>= 4.1)

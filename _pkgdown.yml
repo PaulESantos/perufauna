@@ -76,6 +76,13 @@ reference:
       - pf_match
       - pf_status
 
+  - title: "Interactive Application"
+    desc: "Interactive Shiny interface for biodiversity cross-referencing and data reconciliation."
+    contents:
+      - run_perufauna_app
+      - pf_app
+      - perufauna_app
+
   - title: "Metapackage Orchestration & Diagnostics"
     desc: "Tools to inspect package versions, manage attached packages, and diagnose environment state."
     contents:

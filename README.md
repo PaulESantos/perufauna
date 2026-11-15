@@ -10,8 +10,6 @@ stable](https://img.shields.io/badge/lifecycle-stable-green.svg)](https://lifecy
 [![R-CMD-check](https://github.com/PaulESantos/perufauna/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/PaulESantos/perufauna/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/PaulESantos/perufauna/graph/badge.svg)](https://app.codecov.io/gh/PaulESantos/perufauna)
-[![CRAN
-downloads](https://cranlogs.r-pkg.org/badges/grand-total/perufauna?color=green)](https://CRAN.R-project.org/package=perufauna)
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
@@ -23,21 +21,41 @@ categorías nacionales de amenaza desde una misma interfaz.
 
 El paquete conserva el acceso a las funciones de sus cuatro dependencias
 y ofrece dos funciones de consulta integrada: `pf_match()` para obtener
-resultados detallados y `pf_status()` para generar un resumen de seis
-columnas.
+resultados detallados y `pf_status()` para generar un resumen con campos
+de revisión manual.
 
 ### Aplicación interactiva
 
-Con **perufauna** instalado, añade las dependencias opcionales y abre la app:
+Con **perufauna** instalado, añade las dependencias opcionales y abre la
+app:
 
-```r
+``` r
 install.packages(c("shiny", "DT", "callr", "later"))
 # Opcional: lectura y descarga de archivos de Excel
 install.packages(c("readxl", "writexl"))
+
+# Iniciar la aplicación interactiva (alias canónico: pf_app())
 perufauna::run_perufauna_app()
+# o bien:
+# perufauna::pf_app()
 ```
 
-La app ofrece una consulta integrada y cuatro vistas especializadas: aves, mamíferos, CITES y amenaza nacional. Puedes pegar nombres o subir un archivo TXT, CSV, TSV, XLS o XLSX; seleccionar la columna de nombres; revisar los resultados y descargarlos. Los archivos de Excel requieren `readxl` para importar y `writexl` para exportar. Cada consulta admite hasta 10 000 nombres y se ejecuta en un proceso separado que puedes cancelar.
+También puedes ejecutar la app directamente desde el archivo `app.R` en
+la raíz del repositorio, o mediante:
+
+``` r
+shiny::runApp(system.file("app", package = "perufauna"))
+```
+
+La app ofrece una consulta integrada y cuatro vistas especializadas:
+aves, mamíferos, CITES y amenaza nacional. Puedes pegar nombres o subir
+un archivo TXT, CSV (con detección automática de `,` o `;`), TSV, XLS o
+XLSX; seleccionar la columna de nombres; revisar los resultados con
+tablas interactivas en español y descargarlos. Los archivos de Excel
+requieren `readxl` para importar y `writexl` para exportar. Cada
+consulta admite hasta 10 000 nombres y se ejecuta en un proceso en
+segundo plano (con respaldo síncrono automático si el entorno lo
+requiere) que puedes cancelar.
 
 ------------------------------------------------------------------------
 
@@ -84,10 +102,6 @@ Carga los cuatro paquetes integrados con una instrucción:
 
 ``` r
 library(perufauna)
-#> ── Attaching core perufauna packages ─────────────────── perufauna 0.1.0.9000 ──
-#> ✔ avesperu       0.1.1.9000     ✔ perufaunads004 0.1.0
-#> ✔ citesperu      0.1.0          ✔ perumammals    0.1.0.9000
-#> ℹ Use pf_match() for cross-referenced multi-taxa matching.
 ```
 
 El mensaje de inicio muestra los paquetes adjuntados y sus versiones. Su
@@ -116,7 +130,7 @@ especies <- c(
 
 diagnostico <- pf_match(especies)
 diagnostico
-#> # A tibble: 5 × 10
+#> # A tibble: 5 × 12
 #>   submitted_name       accepted_name  taxonomic_group in_peru in_unop in_pacheco
 #>   <chr>                <chr>          <chr>           <lgl>   <chr>   <lgl>
 #> 1 Panthera onca        Panthera onca  Mammalia        TRUE    <NA>    TRUE
@@ -124,17 +138,20 @@ diagnostico
 #> 3 Tremarctos ornatus   Tremarctos or… Mammalia        TRUE    <NA>    TRUE
 #> 4 Lagothrix flavicauda Lagothrix fla… Mammalia        TRUE    <NA>    TRUE
 #> 5 Homo sapiens         Homo sapiens   <NA>            FALSE   <NA>    FALSE
-#> # ℹ 4 more variables: cites_appendix <chr>, ds004_category <chr>,
-#> #   is_threatened <lgl>, is_endemic <lgl>
+#> # ℹ 6 more variables: cites_appendix <chr>, ds004_category <chr>,
+#> #   is_threatened <lgl>, is_endemic <lgl>, review_flag <lgl>,
+#> #   review_observation <chr>
 ```
 
 #### Columnas de `pf_match()`
 
-`pf_match()` devuelve un `tibble` con diez columnas:
+`pf_match()` devuelve un `tibble` con doce columnas, incluidas las
+señales de revisión:
 
 1.  `submitted_name`: Nombre original ingresado por el usuario.
 2.  `accepted_name`: Nombre devuelto por las fuentes consultadas. Si no
-    hay coincidencia, conserva el nombre ingresado.
+    hay coincidencia, conserva el nombre ingresado; una corrección
+    aproximada requiere validación manual.
 3.  `taxonomic_group`: Clase o grupo mayor asignado (`"Aves"`,
     `"Mammalia"`, etc.).
 4.  `in_peru`: `TRUE` si el nombre figura en las listas de aves o
@@ -144,8 +161,9 @@ diagnostico
     `"Endémico"`, `"Migratorio"`, etc.).
 6.  `in_pacheco`: `TRUE` si la especie está listada en el checklist de
     mamíferos de Pacheco et al. (2021).
-7.  `cites_appendix`: Apéndice regulatorio CITES (`"I"`, `"II"`, `"III"`
-    o `NA`).
+7.  `cites_appendix`: Apéndice CITES encontrado o sugerido (`"I"`,
+    `"II"`, `"III"` o `NA`). Consulta `review_observation` antes de
+    interpretarlo como identificación confirmada.
 8.  `ds004_category`: Categoría D.S. 004 o, si falta, categoría del
     Libro Rojo SERFOR.
 9.  `is_threatened`: `TRUE` si figura en el D.S. 004 o en el Libro Rojo.
@@ -153,32 +171,38 @@ diagnostico
     protección legal.
 10. `is_endemic`: `TRUE` si las listas de aves o mamíferos indican
     endemismo en el Perú.
+11. `review_flag`: `TRUE` si alguna coincidencia aproximada necesita
+    comprobación manual.
+12. `review_observation`: Indica «Necesidad de revisión manual» para
+    esas filas.
 
 ------------------------------------------------------------------------
 
 ### 2. Obtener un resumen con `pf_status()`
 
-`pf_status()` utiliza `pf_match()` y devuelve seis columnas con los
-datos principales de cada nombre:
+`pf_status()` utiliza `pf_match()` y devuelve los datos principales de
+cada nombre junto con las señales de revisión:
 
 ``` r
 pf_status(especies)
-#> # A tibble: 5 × 6
+#> # A tibble: 5 × 8
 #>   submitted_name  accepted_name taxonomic_group occurrence_status cites_appendix
 #>   <chr>           <chr>         <chr>           <chr>             <chr>
-#> 1 Panthera onca   Panthera onca Mammalia        Residente         I
+#> 1 Panthera onca   Panthera onca Mammalia        Registrado en Pe… I
 #> 2 Vultur gryphus  Vultur gryph… Aves            Residente         I
-#> 3 Tremarctos orn… Tremarctos o… Mammalia        Residente         I
+#> 3 Tremarctos orn… Tremarctos o… Mammalia        Registrado en Pe… I
 #> 4 Lagothrix flav… Lagothrix fl… Mammalia        Endémico          I
 #> 5 Homo sapiens    Homo sapiens  <NA>            <NA>              <NA>
-#> # ℹ 1 more variable: ds004_category <chr>
+#> # ℹ 3 more variables: ds004_category <chr>, review_observation <chr>,
+#> #   review_flag <lgl>
 ```
 
 El resultado incluye `submitted_name`, `accepted_name`,
-`taxonomic_group`, `occurrence_status`, `cites_appendix` y
-`ds004_category`. Para mamíferos registrados, `occurrence_status` indica
-`"Endémico"` cuando corresponde y `"Registrado en Perú"` en los demás
-casos; para aves usa el estado devuelto por la lista de referencia.
+`taxonomic_group`, `occurrence_status`, `cites_appendix`,
+`ds004_category`, `review_observation` y `review_flag`. Para mamíferos
+registrados, `occurrence_status` indica `"Endémico"` cuando corresponde
+y `"Registrado en Perú"` en los demás casos; para aves usa el estado
+devuelto por la lista de referencia.
 
 ------------------------------------------------------------------------
 
@@ -186,9 +210,12 @@ casos; para aves usa el estado devuelto por la lista de referencia.
 
 `max_distance` controla la distancia permitida por `avesperu`: los
 valores menores que 1 son relativos a la longitud del nombre (valor
-predeterminado: `0.1`). `max_edit_distance` fija el número máximo de
-ediciones para CITES y D.S. 004 (valor predeterminado: `1`). La búsqueda
-de mamíferos utiliza las reglas de `perumammals`:
+predeterminado: `0.15`). `max_edit_distance` fija el número máximo de
+ediciones para CITES y D.S. 004 (valor predeterminado: `2`). La búsqueda
+de mamíferos utiliza las reglas de `perumammals`. Las coincidencias
+aproximadas se marcan en `review_observation` y `review_flag` para
+evaluación manual. La columna `cites_appendix` muestra el apéndice
+sugerido, incluso cuando la fila requiere revisión:
 
 ``` r
 especies_con_error <- c(
@@ -197,15 +224,32 @@ especies_con_error <- c(
   "Vultur griphus"       # 'i' en lugar de 'y'
 )
 
-pf_match(especies_con_error, max_distance = 0.15, max_edit_distance = 1)
-#> # A tibble: 3 × 10
+pf_match(especies_con_error, max_distance = 0.15, max_edit_distance = 2)
+#> # A tibble: 3 × 12
 #>   submitted_name     accepted_name    taxonomic_group in_peru in_unop in_pacheco
 #>   <chr>              <chr>            <chr>           <lgl>   <chr>   <lgl>
 #> 1 Pantera onca       Panthera onca    Mammalia        TRUE    <NA>    TRUE
 #> 2 Tremarctos ornatus Tremarctos orna… Mammalia        TRUE    <NA>    TRUE
 #> 3 Vultur griphus     Vultur gryphus   Aves            TRUE    Reside… FALSE
-#> # ℹ 4 more variables: cites_appendix <chr>, ds004_category <chr>,
-#> #   is_threatened <lgl>, is_endemic <lgl>
+#> # ℹ 6 more variables: cites_appendix <chr>, ds004_category <chr>,
+#> #   is_threatened <lgl>, is_endemic <lgl>, review_flag <lgl>,
+#> #   review_observation <chr>
+```
+
+Por ejemplo, `Vultor gryphos` puede reconciliarse con `Vultur gryphus` y
+mostrar el Apéndice I como propuesta. La observación indica que el
+nombre debe comprobarse en la fuente antes de usar la categoría como
+dato confirmado:
+
+``` r
+pf_status(c("Vultur gryphus", "Vultor gryphos"))[
+  , c("submitted_name", "accepted_name", "cites_appendix", "review_observation")
+]
+#> # A tibble: 2 × 4
+#>   submitted_name accepted_name  cites_appendix review_observation
+#>   <chr>          <chr>          <chr>          <chr>
+#> 1 Vultur gryphus Vultur gryphus I              <NA>
+#> 2 Vultor gryphos Vultur gryphus I              Necesidad de revisión manual
 ```
 
 ------------------------------------------------------------------------
@@ -252,8 +296,9 @@ Como el resultado es un `tibble`, puedes filtrar las coincidencias por
 categoría, apéndice o endemismo:
 
 ``` r
-# Especies incluidas en el D.S. 004 o en el Libro Rojo
-diagnostico[diagnostico$is_threatened, c("accepted_name", "taxonomic_group", "ds004_category")]
+# Coincidencias sin revisión pendiente en D.S. 004 o Libro Rojo
+diagnostico[diagnostico$is_threatened & !diagnostico$review_flag,
+            c("accepted_name", "taxonomic_group", "ds004_category")]
 #> # A tibble: 4 × 3
 #>   accepted_name        taxonomic_group ds004_category
 #>   <chr>                <chr>           <chr>
@@ -262,8 +307,9 @@ diagnostico[diagnostico$is_threatened, c("accepted_name", "taxonomic_group", "ds
 #> 3 Tremarctos ornatus   Mammalia        VU
 #> 4 Lagothrix flavicauda Mammalia        CR
 
-# Especies incluidas en el Apéndice I de CITES
-diagnostico[!is.na(diagnostico$cites_appendix) & diagnostico$cites_appendix == "I",
+# Coincidencias sin revisión pendiente en el Apéndice I de CITES
+diagnostico[!is.na(diagnostico$cites_appendix) & diagnostico$cites_appendix == "I" &
+              !diagnostico$review_flag,
             c("accepted_name", "cites_appendix")]
 #> # A tibble: 4 × 2
 #>   accepted_name        cites_appendix
@@ -293,10 +339,10 @@ instaladas y los posibles conflictos de nombres en la sesión:
 perufauna_sitrep()
 #> ── R Environment ───────────────────────────────────────────────────────────────
 #> • R: 4.6.1
-#> • perufauna: 0.1.0.9000
+#> • perufauna: 0.1.0
 #> ── Core Biodiversity Packages ──────────────────────────────────────────────────
-#> • avesperu         (v0.1.1.9000)
-#> • perumammals      (v0.1.0.9000)
+#> • avesperu         (v0.1.1)
+#> • perumammals      (v0.0.0.2)
 #> • citesperu        (v0.1.0)
 #> • perufaunads004   (v0.1.0)
 
@@ -305,8 +351,8 @@ perufauna_deps()
 #> # A tibble: 4 × 3
 #>   package        installed local_version
 #>   <chr>          <lgl>     <chr>
-#> 1 avesperu       TRUE      0.1.1.9000
-#> 2 perumammals    TRUE      0.1.0.9000
+#> 1 avesperu       TRUE      0.1.1
+#> 2 perumammals    TRUE      0.0.0.2
 #> 3 citesperu      TRUE      0.1.0
 #> 4 perufaunads004 TRUE      0.1.0
 
@@ -329,10 +375,10 @@ completarlo cuando aún coincide con el nombre ingresado.
 
 Las columnas CITES y D.S. 004 proceden de sus respectivas fuentes.
 `ds004_category` usa la categoría del D.S. 004 y, si no existe, la del
-Libro Rojo. Conviene revisar la fuente original antes de interpretar una
-categoría como protección legal. `pf_status()` selecciona seis columnas
-de esta consulta y calcula `occurrence_status`; no realiza una búsqueda
-independiente.
+Libro Rojo. Las coincidencias aproximadas requieren revisión manual
+antes de interpretar una categoría como protección legal. `pf_status()`
+selecciona los campos de resumen y revisión de esta consulta y calcula
+`occurrence_status`; no realiza una búsqueda independiente.
 
 Si una búsqueda falla, `pf_match()` informa qué paquete produjo el
 error. Los parámetros de distancia se aplican a los buscadores indicados

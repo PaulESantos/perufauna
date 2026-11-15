@@ -2,6 +2,7 @@
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^README\.Rmd$
+^README\.html$
 ^cran-comments\.md$
 ^\.github$
 ^codecov\.yml$
@@ -11,6 +12,10 @@
 ^libraries$
 ^\.cran-lib$
 ^dist$
+^perufauna_.*\.tar\.gz$
 ^tidyverse_ref$
 ^ECOSYSTEM_STANDARDS\.md$
 ^DESIGN_DECISIONS\.md$
+^\.Rprofile$
+^app\.R$
+^R/_disable_autoload\.R$

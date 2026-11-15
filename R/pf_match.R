@@ -13,9 +13,9 @@
 #' @param splist Character vector of scientific names to validate, or a \code{data.frame}
 #'   containing a column with species names.
 #' @param max_distance Non-negative numeric distance used by `avesperu`.
-#'   Values below 1 are relative to the name length (default: 0.1).
+#'   Values below 1 are relative to the name length (default: 0.15).
 #' @param max_edit_distance Non-negative whole number of edits allowed by
-#'   `citesperu` and `perufaunads004` (default: 1). The mammal matcher uses
+#'   `citesperu` and `perufaunads004` (default: 2). The mammal matcher uses
 #'   its own matching rules.
 #' @param name_col Name of the scientific-name column when `splist` is a
 #'   data frame. If omitted, a common column name is detected automatically.
@@ -23,28 +23,33 @@
 #' @return A \code{tibble::tibble} with harmonized cross-database columns:
 #' \itemize{
 #'   \item \code{submitted_name}: The raw input name.
-#'   \item \code{accepted_name}: Validated/accepted scientific binomial name.
+#'   \item \code{accepted_name}: Name returned by the matching sources; an
+#'     approximate correction is a candidate until manually reviewed.
 #'   \item \code{taxonomic_group}: Taxonomic class/group ("Aves", "Mammalia", "Reptilia", "Amphibia", etc.).
 #'   \item \code{in_peru}: Logical. Listed in a Peruvian bird, mammal, or
 #'     national fauna reference. CITES inclusion alone does not establish occurrence.
 #'   \item \code{in_unop}: Character. UNOP bird status ("Residente", "Endémico", "Divagante", "Migratorio", "Introducido", "No confirmado", or NA).
 #'   \item \code{in_pacheco}: Logical. Listed in Pacheco et al. (2021) Peru Mammals.
-#'   \item \code{cites_appendix}: CITES status ("I", "II", "III", or NA).
+#'   \item \code{cites_appendix}: CITES appendix ("I", "II", "III", or NA),
+#'     including approximate candidates explicitly marked for manual review.
 #'   \item \code{ds004_category}: Category from D.S. 004, or from the SERFOR
 #'     Red Book when the species is absent from D.S. 004.
 #'   \item \code{is_threatened}: Logical. Listed in D.S. 004 or the SERFOR Red Book;
 #'     Red Book inclusion alone does not establish legal protection.
 #'   \item \code{is_endemic}: Logical. Endemic to Peru (based on UNOP or Pacheco).
+#'   \item \code{review_flag}: Logical. An approximate match or source candidate
+#'     requires manual taxonomic review before use as a confirmed identification.
+#'   \item \code{review_observation}: "Necesidad de revisión manual" for
+#'     approximate matches; otherwise NA.
 #' }
 #'
 #' @examples
-#' \donttest{
 #' species <- c("Panthera onca", "Vultur gryphus", "Tremarctos ornatus", "Homo sapiens")
 #' pf_match(species)
-#' }
 #'
+#' @encoding UTF-8
 #' @export
-pf_match <- function(splist, max_distance = 0.1, max_edit_distance = 1L,
+pf_match <- function(splist, max_distance = 0.15, max_edit_distance = 2L,
                      name_col = NULL) {
   if (!is.numeric(max_distance) || length(max_distance) != 1L ||
       !is.finite(max_distance) || max_distance < 0 ||
@@ -101,7 +106,9 @@ pf_match <- function(splist, max_distance = 0.1, max_edit_distance = 1L,
       cites_appendix  = character(),
       ds004_category  = character(),
       is_threatened   = logical(),
-      is_endemic      = logical()
+      is_endemic      = logical(),
+      review_flag     = logical(),
+      review_observation = character()
     ))
   }
 
@@ -154,6 +161,7 @@ pf_match <- function(splist, max_distance = 0.1, max_edit_distance = 1L,
     cites_app <- NA_character_
     ds004_cat <- NA_character_
     threatened <- FALSE
+    review_needed <- FALSE
 
     # Check Aves
     if (!is.null(res_aves) && i <= nrow(res_aves)) {
@@ -163,6 +171,9 @@ pf_match <- function(splist, max_distance = 0.1, max_edit_distance = 1L,
         unop_status <- if (!is.na(a_row$status) && nzchar(trimws(a_row$status))) a_row$status else "Registrado"
         grp <- "Aves"
         accepted_nm <- a_row$accepted_name
+        if (!is.na(a_row$dist) && a_row$dist > 0) {
+          review_needed <- TRUE
+        }
         if (!is.na(a_row$status) && grepl("end[e\u00e9]mic", tolower(a_row$status))) {
           endemic <- TRUE
         }
@@ -179,6 +190,10 @@ pf_match <- function(splist, max_distance = 0.1, max_edit_distance = 1L,
         if (isTRUE(m_row$endemic)) {
           endemic <- TRUE
         }
+        if (!is.na(m_row$Matched.Name) &&
+            !identical(tolower(trimws(raw_name)), tolower(trimws(m_row$Matched.Name)))) {
+          review_needed <- TRUE
+        }
       }
     }
 
@@ -193,6 +208,9 @@ pf_match <- function(splist, max_distance = 0.1, max_edit_distance = 1L,
         if (is.na(accepted_nm) || accepted_nm == raw_name) {
           if (!is.na(c_row$accepted_name)) accepted_nm <- c_row$accepted_name
         }
+      } else if (identical(c_row$match_assessment, "requires_taxonomic_validation")) {
+        cites_app <- c_row$apendice
+        review_needed <- TRUE
       }
     }
 
@@ -207,6 +225,9 @@ pf_match <- function(splist, max_distance = 0.1, max_edit_distance = 1L,
         }
         if (is.na(accepted_nm) || accepted_nm == raw_name) {
           if (!is.na(d_row$matched_name)) accepted_nm <- d_row$matched_name
+        }
+        if (!is.na(d_row$match_type) && d_row$match_type != "exact") {
+          review_needed <- TRUE
         }
       }
     }
@@ -224,7 +245,9 @@ pf_match <- function(splist, max_distance = 0.1, max_edit_distance = 1L,
       cites_appendix  = cites_app,
       ds004_category  = ds004_cat,
       is_threatened   = threatened,
-      is_endemic      = endemic
+      is_endemic      = endemic,
+      review_flag     = review_needed,
+      review_observation = if (review_needed) "Necesidad de revisi\u00F3n manual" else NA_character_
     )
   }
 
